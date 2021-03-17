@@ -1,0 +1,42 @@
+created:
+    - database/factories/CategoryFactory.php
+    - database/factories/TagFactory.php
+    - database/factories/AllergenFactory.php
+    - database/factories/IngredientFactory.php
+    - database/factories/RecipeFactory.php
+    - database/factories/EventFactory.php
+    - database/factories/ReservationFactory.php
+    - database/migrations/2021_03_17_094735_create_categories_table.php
+    - database/migrations/2021_03_17_094736_create_tags_table.php
+    - database/migrations/2021_03_17_094737_create_allergens_table.php
+    - database/migrations/2021_03_17_094738_create_ingredients_table.php
+    - database/migrations/2021_03_17_094739_create_recipes_table.php
+    - database/migrations/2021_03_17_094740_create_events_table.php
+    - database/migrations/2021_03_17_094741_create_reservations_table.php
+    - database/migrations/2021_03_17_094742_create_recipe_tag_table.php
+    - database/migrations/2021_03_17_094743_create_allergen_ingredient_table.php
+    - database/migrations/2021_03_17_094744_create_ingredient_tag_table.php
+    - database/migrations/2021_03_17_094745_create_ingredient_recipe_table.php
+    - database/migrations/2021_03_17_094746_create_event_reservation_table.php
+    - database/migrations/2021_03_17_094747_create_event_recipe_table.php
+    - app/Category.php
+    - app/Tag.php
+    - app/Allergen.php
+    - app/Ingredient.php
+    - app/Recipe.php
+    - app/Event.php
+    - app/Reservation.php
+    - database/seeders/CategorySeeder.php
+    - database/seeders/TagSeeder.php
+    - database/seeders/AllergenSeeder.php
+    - database/seeders/IngredientSeeder.php
+    - database/seeders/RecipeSeeder.php
+models:
+    Models\User: { name: string, email: string, email_verified_at: 'datetime nullable', password: string, remember_token: 'string:100 nullable' }
+    Category: { name: 'string:32', slug: 'string:32 unique default:''''', timestamp: true, relationships: { hasMany: Ingredient } }
+    Tag: { name: 'string:32', slug: 'string:32 unique default:''''', timestamp: true, relationships: { belongsToMany: Recipe } }
+    Allergen: { name: string, slug: 'string unique default:''''', img_icon_path: 'string nullable', relationships: { belongsToMany: Ingredient } }
+    Ingredient: { name: 'string:64', slug: 'string:64 unique default:''''', description: 'string:192', timestamp: true, relationships: { belongsToMany: 'Tag, Allergen, Recipe', belongsTo: Category } }
+    Recipe: { name: 'string:70', slug: 'string:70', extract: 'string:155', body: longtext, timestamp: true, relationships: { belongsToMany: Ingredient } }
+    Event: { name: 'string:70', extrack: 'string:70', starting_at: datetime, finished_at: datetime, timestamp: true, relationships: { belongsToMany: 'Reservation, Recipe' } }
+    Reservation: { stock: integer, timestamp: true, relationships: { hasOne: Event } }

@@ -1,0 +1,59 @@
+models:
+  Category:
+    name: string:32
+    slug: string:32 unique default:''
+    timestamp: true
+    relationships:
+      hasMany: Ingredient
+
+  Tag:
+    name: string:32
+    slug: string:32 unique default:''
+    timestamp: true
+    relationships:
+      belongsToMany: Recipe
+
+  Allergen:
+    name: string
+    slug: string unique default:''
+    img_icon_path: string nullable
+    relationships:
+      belongsToMany: Ingredient
+
+  Ingredient:
+    name: string:64
+    slug: string:64 unique default:''
+    description: string:192
+    timestamp: true
+    relationships:
+      belongsToMany: Tag, Allergen, Recipe
+      belongsTo: Category
+
+  Recipe:
+    name: string:70
+    slug: string:70
+    extract: string:155
+    body: longtext
+    timestamp: true
+    relationships:
+      belongsToMany: Ingredient
+  
+  Event:
+    name: string:70
+    extrack: string:70
+    starting_at: datetime
+    finished_at: datetime
+    timestamp: true
+    relationships:
+      belongsToMany: Reservation, Recipe
+
+  Reservation:
+    stock: integer
+    timestamp: true
+    relationships:
+      hasOne: Event
+
+seeders: Category, Tag, Allergen, Ingredient, Recipe
+
+  
+  
