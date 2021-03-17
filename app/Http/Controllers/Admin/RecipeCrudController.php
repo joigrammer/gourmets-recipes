@@ -63,13 +63,34 @@ class RecipeCrudController extends CrudController
 
         CRUD::field('name');
         CRUD::field('slug');
-        CRUD::field('extract');
-        CRUD::field('body');
+
+        CRUD::addField([
+            'name' => 'tags',
+            'entity' => 'tags'
+        ]);
+
+        CRUD::addField([
+            'name' => 'extract',
+            'type' => 'textarea'
+        ]);
+
+        CRUD::addField([
+            'name' => 'body',
+            'type' => 'ckeditor'
+        ]);
         
         CRUD::addField([
             'name' => 'ingredients',
             'type' => 'select2_multiple',
             'entity' => 'ingredients'
+        ]);
+
+        CRUD::addField([
+            'label' => "Icon",
+            'name' => "image",
+            'type' => 'image',
+            'crop' => true, 
+            'aspect_ratio' => 1,
         ]);
 
         /**

@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\Allergen;
+use Illuminate\Support\Str;
 
 class AllergenFactory extends Factory
 {
@@ -22,10 +22,10 @@ class AllergenFactory extends Factory
      */
     public function definition()
     {
+        $name = $this->faker->unique()->word(rand(1, 3));
         return [
-            'name' => $this->faker->name,
-            'slug' => $this->faker->slug,
-            'img_icon_path' => $this->faker->word,
+            'name' => $name,
+            'slug' => Str::slug($name)
         ];
     }
 }

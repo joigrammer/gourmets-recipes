@@ -4,11 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+use Intervention\Image\ImageManagerStatic as Image;
+use Illuminate\Support\Facades\Storage;
+use Cviebrock\EloquentSluggable\Sluggable;
 
 class Category extends Model
 {
     use \Backpack\CRUD\app\Models\Traits\CrudTrait;
     use HasFactory;
+    use Sluggable;
 
     /**
      * The attributes that are mass assignable.
@@ -18,6 +23,7 @@ class Category extends Model
     protected $fillable = [
         'name',
         'slug',
+        'image'
     ];
 
     /**
@@ -29,9 +35,53 @@ class Category extends Model
         'id' => 'integer',
     ];
 
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'name'
+            ]
+        ];
+    }
 
     public function ingredients()
     {
         return $this->hasMany(\App\Models\Ingredient::class);
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+        static::deleting(function($obj) {
+            Storage::delete(Str::replaceFirst('storage/','public/', $obj->image));
+        });
+    }
+
+
+
+    public function setImageAttribute($value)
+    {
+        $attribute_name = "image";
+        $destination_path = "public/categories";
+
+        if ($value==null) {
+            Storage::delete($this->{$attribute_name});
+
+            $this->attributes[$attribute_name] = null;
+        }
+
+        if (Str::startsWith($value, 'data:image'))
+        {
+            $image = Image::make($value)->encode('jpg', 90);
+
+            $filename = md5($value.time()).'.jpg';
+
+            Storage::put($destination_path.'/'.$filename, $image->stream());
+
+            Storage::delete(Str::replaceFirst('storage/','public/', $this->{$attribute_name}));
+
+            $public_destination_path = Str::replaceFirst('public/', 'storage/', $destination_path);
+            $this->attributes[$attribute_name] = $public_destination_path.'/'.$filename;
+        }
     }
 }

@@ -15,9 +15,8 @@ class CreateAllergensTable extends Migration
     {
         Schema::create('allergens', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('slug')->unique()->default('');
-            $table->string('img_icon_path')->nullable();
+            $table->string('name', 32);
+            $table->string('slug', 32)->unique()->default('');
             $table->timestamps();
         });
     }

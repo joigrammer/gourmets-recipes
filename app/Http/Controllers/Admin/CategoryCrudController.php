@@ -62,11 +62,13 @@ class CategoryCrudController extends CrudController
         CRUD::field('name');
         CRUD::field('slug');
 
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
-         */
+        CRUD::addField([
+            'label' => "Icon",
+            'name' => "image",
+            'type' => 'image',
+            'crop' => true, // set to true to allow cropping, false to disable
+            'aspect_ratio' => 1, // omit or set to 0 to allow any aspect ratio
+        ]);
     }
 
     /**

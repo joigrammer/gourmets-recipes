@@ -41,13 +41,7 @@ class AllergenCrudController extends CrudController
     {
         CRUD::column('name');
         CRUD::column('slug');
-        CRUD::column('img_icon_path');
-
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
-         */
+        CRUD::column('image');
     }
 
     /**
@@ -62,13 +56,14 @@ class AllergenCrudController extends CrudController
 
         CRUD::field('name');
         CRUD::field('slug');
-        CRUD::field('img_icon_path');
-
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
-         */
+        
+        CRUD::addField([
+            'label' => "Icon",
+            'name' => "image",
+            'type' => 'image',
+            'crop' => true, 
+            'aspect_ratio' => 1,
+        ]);
     }
 
     /**
