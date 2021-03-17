@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Recipe extends Model
 {
+    use \Backpack\CRUD\app\Models\Traits\CrudTrait;
     use HasFactory;
 
     /**
