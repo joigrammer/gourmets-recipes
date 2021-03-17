@@ -1,15 +1,13 @@
 models:
   Category:
     name: string:32
-    slug: string:32 unique default:''
-    timestamp: true
+    slug: string unique default:''
     relationships:
       hasMany: Ingredient
 
   Tag:
     name: string:32
-    slug: string:32 unique default:''
-    timestamp: true
+    slug: string unique default:''
     relationships:
       belongsToMany: Recipe
 
@@ -22,36 +20,33 @@ models:
 
   Ingredient:
     name: string:64
-    slug: string:64 unique default:''
+    slug: string unique default:''
     description: string:192
-    timestamp: true
+    category_id: id foreign:categories.id
     relationships:
       belongsToMany: Tag, Allergen, Recipe
-      belongsTo: Category
 
   Recipe:
     name: string:70
-    slug: string:70
+    slug: string
     extract: string:155
     body: longtext
-    timestamp: true
     relationships:
-      belongsToMany: Ingredient
+      belongsToMany: Ingredient, Tag
   
   Event:
     name: string:70
-    extrack: string:70
+    extrack: string
     starting_at: datetime
     finished_at: datetime
-    timestamp: true
     relationships:
       belongsToMany: Reservation, Recipe
 
   Reservation:
     stock: integer
-    timestamp: true
+    event_id: id foreign:events.id
     relationships:
-      hasOne: Event
+      belongsTo: Event
 
 seeders: Category, Tag, Allergen, Ingredient, Recipe
 
