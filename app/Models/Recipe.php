@@ -46,6 +46,11 @@ class Recipe extends Model
         ];
     }
 
+    public function meal()
+    {
+        return $this->belongsTo(Meal::class);
+    }
+
     public function ingredients()
     {
         return $this->belongsToMany(\App\Models\Ingredient::class);

@@ -7,3 +7,4 @@
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('recipe') }}'><i class='nav-icon la la-question'></i> Recipes</a></li>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('reservation') }}'><i class='nav-icon la la-question'></i> Reservations</a></li>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('tag') }}'><i class='nav-icon la la-question'></i> Tags</a></li>
+<li class='nav-item'><a class='nav-link' href='{{ backpack_url('meal') }}'><i class='nav-icon la la-question'></i> Meals</a></li>
