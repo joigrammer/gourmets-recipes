@@ -1,5 +1,14 @@
 <x-app-layout>
-
+    <div class="py-16" style="background-image: url({{ asset('/img/background.jpg') }}); background-repeat: repeat-x;"></div>
+    <div class="text-center my-6 uppercase" style="font-family: 'Truculenta', sans-serif;">
+        <h1 class="text-3xl">Nuestras recetas</h1>
+        <p class="text-xl">con más de {{ $total }} recetas...</p>
+    </div>
+    <div class="grid grid-cols-12 max-w-7xl m-auto px-4 mt-7 sm:px-6">
+        @foreach($recipes as $recipe)
+        @livewire('home-mini-card-recipe', ['recipe' => $recipe])
+        @endforeach
+    </div>
 </x-app-layout>
 <!--<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">

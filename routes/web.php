@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\HomePageController;
 use App\Http\Controllers\RecipePageController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,9 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
+Route::get('/', [HomePageController::class, 'index'])->name('welcome');
 
 Route::get('/recipes', [RecipePageController::class, 'index'])->name('dashboard');
 
