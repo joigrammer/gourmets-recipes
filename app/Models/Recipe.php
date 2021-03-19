@@ -25,7 +25,9 @@ class Recipe extends Model
         'slug',
         'extract',
         'body',
-        'image'
+        'image',
+        'meal_id',
+        'user_id'
     ];
 
     /**
@@ -59,6 +61,11 @@ class Recipe extends Model
     public function tags()
     {
         return $this->belongsToMany(\App\Models\Tag::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public static function boot()

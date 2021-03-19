@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Meal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Recipe;
+use App\Models\User;
 
 class RecipeFactory extends Factory
 {
@@ -23,11 +24,12 @@ class RecipeFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->name,
+            'name' => $this->faker->text(rand(35, 70)),
             'slug' => $this->faker->slug,
-            'extract' =>  $this->faker->text(rand(32, 155)),
+            'extract' =>  $this->faker->text(rand(75, 155)),
             'body' =>  $this->faker->text(rand(200, 450)),
-            'meal_id' => Meal::all()->random()->id
+            'meal_id' => Meal::all()->random()->id,
+            'user_id' => User::all()->random()->id
         ];
     }
 }

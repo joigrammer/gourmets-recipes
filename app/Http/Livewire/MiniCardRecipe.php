@@ -4,12 +4,12 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 
-class CardRecipe extends Component
+class MiniCardRecipe extends Component
 {
     public $recipe;
 
     public function render()
     {
-        return view('livewire.card-recipe', $this->recipe);
+        return view('livewire.mini-card-recipe', $this->recipe);
     }
 }

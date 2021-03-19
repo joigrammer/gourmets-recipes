@@ -27,7 +27,8 @@ class RecipeRequest extends FormRequest
     {
         return [
             'name' => 'required|min:5|max:70',
-            'extract' => 'required|min:5|max155',
+            'meal_id' => 'required',
+            'extract' => 'required|min:5|max:155',
             'body' => 'required',            
         ];
     }

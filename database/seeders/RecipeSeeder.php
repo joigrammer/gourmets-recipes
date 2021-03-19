@@ -16,9 +16,9 @@ class RecipeSeeder extends Seeder
      */
     public function run()
     {
-        Recipe::factory(100)->create()->each(function ($recipe){
+        Recipe::factory(50)->create()->each(function ($recipe){
             $recipe->tags()->saveMany(
-                Tag::inRandomOrder()->limit(rand(1,5))->get()
+                Tag::inRandomOrder()->limit(rand(0,3))->get()
             );
             $recipe->ingredients()->saveMany(
                 Ingredient::inRandomOrder()->limit(rand(2, 8))->get()

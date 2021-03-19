@@ -25,13 +25,11 @@
             @livewire('navigation-menu')
 
             <!-- Page Heading -->
-            @if (isset($header))
-                <header class="bg-white shadow relative">                
-                    <div class="max-w-7xl mx-auto py-4">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endif
+            <header class="bg-white shadow relative">                
+                <div class="max-w-7xl mx-auto py-4">
+                    @livewire('navigation')
+                </div>
+            </header>
 
             <!-- Page Content -->
             <main>

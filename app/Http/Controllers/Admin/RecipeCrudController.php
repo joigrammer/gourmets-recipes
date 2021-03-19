@@ -61,8 +61,21 @@ class RecipeCrudController extends CrudController
     {
         CRUD::setValidation(RecipeRequest::class);
 
-        CRUD::field('name');
-        CRUD::field('slug');
+        CRUD::addField([
+            'name' => 'name',
+            'type' => 'text'
+        ]);
+        
+        CRUD::addField([
+            'name' => 'slug',
+            'type' => 'text'
+        ]);
+
+        CRUD::addField([
+            'name' => 'meal_id',
+            'type' => 'select2',
+            'entity' => 'meal'
+        ]);
 
         CRUD::addField([
             'name' => 'tags',
