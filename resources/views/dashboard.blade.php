@@ -1,5 +1,5 @@
 <x-app-layout>
-     <div class="py-16" style="background-image: url({{ asset('/img/background.jpg') }}); background-repeat: repeat-x;"></div>
+    <div class="py-16" style="background-image: url({{ asset('/img/background.jpg') }}); background-repeat: repeat-x;"></div>
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 grid grid-cols-12">
             <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg col-span-9 lg:px-8 sm:px-4">
@@ -14,8 +14,8 @@
                 -->
                 <div class="grid grid-cols-6">
                     @foreach($recipes as $recipe)
-                        @livewire('mini-card-recipe', ['recipe' => $recipe])
-                    @endforeach 
+                    @livewire('mini-card-recipe', ['recipe' => $recipe])
+                    @endforeach
                 </div>
             </div>
             <div class="col-span-3">

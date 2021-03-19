@@ -18,6 +18,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomePageController::class, 'index'])->name('welcome');
 
+Route::prefix('recipes')->group(function () {
+    Route::get('/', [RecipePageController::class, 'index'])->name('dashboard');
+    Route::get('/{slug}', [RecipePageController::class, 'show'])->name('recipes.show');
+});
+
 Route::get('/recipes', [RecipePageController::class, 'index'])->name('dashboard');
 
 //Route::middleware(['auth:sanctum', 'verified'])->get('/recipes', [RecipePageController::class, 'index'])->name('dashboard');

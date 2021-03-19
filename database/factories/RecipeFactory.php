@@ -6,6 +6,8 @@ use App\Models\Meal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Recipe;
 use App\Models\User;
+use Facade\FlareClient\Stacktrace\File;
+use Illuminate\Support\Facades\Storage;
 
 class RecipeFactory extends Factory
 {
@@ -22,12 +24,13 @@ class RecipeFactory extends Factory
      * @return array
      */
     public function definition()
-    {
+    {        
         return [
             'name' => $this->faker->text(rand(35, 70)),
             'slug' => $this->faker->slug,
             'extract' =>  $this->faker->text(rand(75, 155)),
             'body' =>  $this->faker->text(rand(200, 450)),
+            'image' => $this->faker->image('public/storage/images/recipes', 640, 480, null, false),
             'meal_id' => Meal::all()->random()->id,
             'user_id' => User::all()->random()->id
         ];

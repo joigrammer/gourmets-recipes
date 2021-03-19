@@ -6,7 +6,6 @@
             <p class="text-lg">{{ $recipe->user->name }}</p>
         </div>
     </div>
-
     <div class="ml-12">
         <div class="mt-2 text-xl text-gray-500">
             {{ $recipe->extract }}

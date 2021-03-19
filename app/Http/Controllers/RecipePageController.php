@@ -12,4 +12,10 @@ class RecipePageController extends Controller
         $recipes = Recipe::all();
         return view('dashboard', compact('recipes'));
     }
+
+    public function show($slug)
+    {
+        $recipe = Recipe::where('slug', $slug)->first();
+        return view('recipes.show', compact('recipe'));
+    }
 }
