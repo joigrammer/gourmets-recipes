@@ -40,7 +40,7 @@ class EventCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::column('name');
-        CRUD::column('extrack');
+        CRUD::column('description');
         CRUD::column('starting_at');
         CRUD::column('finished_at');
 
@@ -62,7 +62,7 @@ class EventCrudController extends CrudController
         CRUD::setValidation(EventRequest::class);
 
         CRUD::field('name');
-        CRUD::field('extrack');
+        CRUD::field('description');
         CRUD::field('starting_at');
         CRUD::field('finished_at');
 

@@ -28,9 +28,9 @@ class RecipeFactory extends Factory
         return [
             'name' => $this->faker->text(rand(35, 70)),
             'slug' => $this->faker->slug,
-            'extract' =>  $this->faker->text(rand(75, 155)),
-            'body' =>  $this->faker->text(rand(200, 450)),
-            'image' => $this->faker->image('public/storage/images/recipes', 640, 480, null, false),
+            'extract' =>  $this->faker->text(rand(120, 155)),
+            'body' =>  $this->faker->text(rand(1200, 1850)),
+            'image' => '',//$this->faker->image('public/storage/images/recipes', 640, 480, null, false),
             'meal_id' => Meal::all()->random()->id,
             'user_id' => User::all()->random()->id
         ];

@@ -18,6 +18,7 @@ class Reservation extends Model
     protected $fillable = [
         'stock',
         'event_id',
+        'recipe_id'
     ];
 
     /**
@@ -34,5 +35,10 @@ class Reservation extends Model
     public function event()
     {
         return $this->belongsTo(\App\Models\Event::class);
+    }
+
+    public function recipe()
+    {
+        return $this->belongsTo(\App\Models\Recipe::class);
     }
 }

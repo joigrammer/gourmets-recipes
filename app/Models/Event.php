@@ -17,7 +17,7 @@ class Event extends Model
      */
     protected $fillable = [
         'name',
-        'extrack',
+        'description',
         'starting_at',
         'finished_at',
     ];

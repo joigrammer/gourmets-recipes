@@ -41,12 +41,7 @@ class ReservationCrudController extends CrudController
     {
         CRUD::column('stock');
         CRUD::column('event_id');
-
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
-         */
+        CRUD::column('recipe_id');
     }
 
     /**
@@ -62,6 +57,11 @@ class ReservationCrudController extends CrudController
         CRUD::field('stock');
         CRUD::field('event_id');
 
+        CRUD::addField([
+            'name' => 'recipe_id',
+            'type' => 'select2',
+            'entity' => 'recipe'
+        ]);
         /**
          * Fields can be defined using the fluent syntax or array syntax:
          * - CRUD::field('price')->type('number');

@@ -47,7 +47,21 @@ class Recipe extends Model
             ]
         ];
     }
+    /*
+    public function __construct(array $attributes = [])
+    {   
+        $this->creating([$this, 'onCreating']);
+        parent::__construct($attributes);
+    }
 
+    public function onCreating(Recipe $row)
+    {
+        if (!\auth()->user()->id) {
+            return false;
+        }
+        $row->setAttribute('user_id', \auth()->user()->id);
+    }
+    */
     public function meal()
     {
         return $this->belongsTo(Meal::class);
@@ -65,7 +79,7 @@ class Recipe extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(\App\Models\User::class);
     }
 
     public static function boot()
