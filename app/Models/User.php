@@ -64,4 +64,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Recipe::class);
     }
+
+    public function rations()
+    {
+        return $this->belongsToMany(Ration::class);
+    }
 }

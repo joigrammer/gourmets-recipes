@@ -2,7 +2,7 @@
     <h2 class="text-4xl">Ingredientes</h2>
     <ul class="grid grid-cols-1 lg:grid-cols-2 gap-x-4 py-4 text-lg">
         @foreach($ingredients as $ingredient)
-            <li class="px-2 border-t-2 border-white">{{ $ingredient->name }}</li>
+            <li class="px-2 border-t border-white">{{ $ingredient->name }}</li>
         @endforeach
         
     </ul>

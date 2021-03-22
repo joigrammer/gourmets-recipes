@@ -3,6 +3,7 @@
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HomePageController;
 use App\Http\Controllers\RecipePageController;
+use App\Http\Controllers\ReservationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,5 +25,7 @@ Route::prefix('recipes')->group(function () {
 });
 
 Route::get('/recipes', [RecipePageController::class, 'index'])->name('dashboard');
+
+Route::get('/reservations/{slug}', [ReservationController::class, 'index'])->name('reservations.index');
 
 //Route::middleware(['auth:sanctum', 'verified'])->get('/recipes', [RecipePageController::class, 'index'])->name('dashboard');

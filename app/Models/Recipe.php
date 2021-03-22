@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as Image;
 use Illuminate\Support\Facades\Storage;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Support\Facades\Auth;
 
 class Recipe extends Model
 {
@@ -47,21 +49,21 @@ class Recipe extends Model
             ]
         ];
     }
-    /*
+    
     public function __construct(array $attributes = [])
-    {   
+    {           
         $this->creating([$this, 'onCreating']);
         parent::__construct($attributes);
     }
 
     public function onCreating(Recipe $row)
-    {
-        if (!\auth()->user()->id) {
+    {        
+        if (!Auth::id()) {
             return false;
         }
-        $row->setAttribute('user_id', \auth()->user()->id);
+        $row->setAttribute('user_id', Auth::id());
     }
-    */
+    
     public function meal()
     {
         return $this->belongsTo(Meal::class);
@@ -80,6 +82,30 @@ class Recipe extends Model
     public function user()
     {
         return $this->belongsTo(\App\Models\User::class);
+    }
+
+    public function reservations()
+    {
+        return $this->belongsToMany(\App\Models\Reservation::class);
+    }
+
+    public function rations()
+    {
+        return $this->hasMany(\App\Models\Ration::class);   
+    }
+
+    public function hasRationAvailable()
+    {
+        return $this->rations()->where(function ($query) {
+            $query->where('rations.available_at', '>', Carbon::now());
+        })->count();
+    }
+
+    public function hasRationAvailableInDate($date)
+    {
+        return $this->rations()->where(function ($query) use ($date) {
+            $query->where('rations.available_at', '=', new Carbon($date));
+        })->get();
     }
 
     public static function boot()

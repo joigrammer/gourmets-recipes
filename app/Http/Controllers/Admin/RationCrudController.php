@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\RecipeRequest;
+use App\Http\Requests\RationRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class RecipeCrudController
+ * Class RationCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class RecipeCrudController extends CrudController
+class RationCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -26,9 +26,9 @@ class RecipeCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\Recipe::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/recipe');
-        CRUD::setEntityNameStrings('recipe', 'recipes');
+        CRUD::setModel(\App\Models\Ration::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/ration');
+        CRUD::setEntityNameStrings('ration', 'rations');
     }
 
     /**
@@ -39,10 +39,12 @@ class RecipeCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column('name');
-        CRUD::column('slug');
-        CRUD::column('extract');
-        CRUD::column('body');
+        CRUD::column('id');
+        CRUD::column('available_at');
+        //CRUD::column('start_date');
+        //CRUD::column('end_date');
+        CRUD::column('qty');
+        CRUD::column('recipe_id');
 
         /**
          * Columns can be defined using the fluent syntax or array syntax:
@@ -59,52 +61,30 @@ class RecipeCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(RecipeRequest::class);
-
-        CRUD::addField([
-            'name' => 'name',
-            'type' => 'text'
-        ]);
+        CRUD::setValidation(RationRequest::class);
         
         CRUD::addField([
-            'name' => 'slug',
-            'type' => 'text'
+            'name' => 'available_at',
+            'type' => 'date_picker',
+            'date_picker_options' => [
+                'todayBtn' => 'linked',
+                'format'   => 'dd-mm-yyyy',
+             ],
         ]);
 
+        /*
         CRUD::addField([
-            'name' => 'meal_id',
-            'type' => 'select2',
-            'entity' => 'meal'
+            'name'  => ['start_date', 'end_date'],
+            'label' => 'Event Date Range',
+            'type'  => 'date_range',
+            'date_range_options' => [
+                'timePicker' => false,
+                'locale' => ['format' => 'DD/MM/YYYY']
+            ]
         ]);
-
-        CRUD::addField([
-            'name' => 'tags',
-            'entity' => 'tags'
-        ]);
-
-        CRUD::addField([
-            'name' => 'extract',
-            'type' => 'textarea'
-        ]);
-
-        CRUD::addField([
-            'name' => 'body',
-            'type' => 'ckeditor'
-        ]);
-        
-        CRUD::addField([
-            'name' => 'ingredients',
-            'type' => 'select2_multiple',
-            'entity' => 'ingredients'
-        ]);
-
-        CRUD::addField([
-            'label' => "Icon",
-            'name' => "image",
-            'type' => 'image',
-            'crop' => false, 
-            'aspect_ratio' => 1,
-        ]);
+        */
+        CRUD::field('qty');
+        CRUD::field('recipe_id');
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:

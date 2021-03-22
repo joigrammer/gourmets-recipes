@@ -19,6 +19,11 @@ class EventCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
+    public function store()
+    {
+        dd($this->crud);
+    }
+
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
      * 
@@ -63,7 +68,16 @@ class EventCrudController extends CrudController
 
         CRUD::field('name');
         CRUD::field('description');
-        CRUD::field('starting_at');
+        CRUD::addField([
+            'name'  => ['start_date', 'end_date'],
+            'label' => 'Event Date Range',
+            'type'  => 'date_range',
+            'default'            => ['2019-03-28 01:01', '2019-04-05 02:00'],
+            'date_range_options' => [
+                'timePicker' => false,
+                'locale' => ['format' => 'DD/MM/YYYY HH:mm']
+            ]
+        ]);
         CRUD::field('finished_at');
 
         /**
