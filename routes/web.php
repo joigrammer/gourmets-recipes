@@ -22,6 +22,7 @@ Route::get('/', [HomePageController::class, 'index'])->name('welcome');
 Route::prefix('recipes')->group(function () {
     Route::get('/', [RecipePageController::class, 'index'])->name('dashboard');
     Route::get('/{slug}', [RecipePageController::class, 'show'])->name('recipes.show');
+    Route::get('/meals/{slug}', [RecipePageController::class, 'meals'])->name('recipes.meals');
 });
 
 Route::get('/recipes', [RecipePageController::class, 'index'])->name('dashboard');

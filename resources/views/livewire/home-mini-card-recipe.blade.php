@@ -18,9 +18,9 @@
         </div>
     </div>
     @if($recipe->hasRationAvailable())
-    <div class="flex bg-blue-200 rounded-b-lg items-center gap-2 text-xl xl:text-base pl-4 py-1 border-t border-gray-200 uppercase font-bold">
-        <img class="w-2 xl:w-4" src="{{ asset('/storage/icons/event.svg') }}" alt="Event">
-        <a href="{{ route('reservations.index', ['slug' => $recipe->slug]) }}" class="cursor-pointer">Raciones Disponibles</a>
+    <div class="flex bg-blue-200 rounded-b-lg items-center gap-2 text-lg pl-4 py-1 border-t border-gray-200 uppercase font-bold">
+        <img class="w-4" src="{{ asset('/storage/icons/event.svg') }}" alt="Event">
+        <a href="{{ route('reservations.index', ['slug' => $recipe->slug]) }}" class="cursor-pointer">¡Raciones Disponibles!</a>
     </div>
     @endif
 </div>
