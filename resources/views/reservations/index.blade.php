@@ -250,12 +250,13 @@
                             
                             // find where to start calendar day of week
                             let dayOfWeek = new Date(this.year, this.month).getDay();
+
                             let blankdaysArray = [];
                             for (var i = 1; i <= dayOfWeek; i++) {
                                 blankdaysArray.push(i);
                             }
 
-
+                            console.log(blankdaysArray);
 
                             let daysArray = [];
                             for (var i = 1; i <= daysInMonth; i++) {

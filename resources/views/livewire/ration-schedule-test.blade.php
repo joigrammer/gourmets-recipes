@@ -1,4 +1,4 @@
-<div class="container mx-auto mt-8">
+<div class="mx-auto mt-8">
     <div class="flex items-start conainter bg-white overflow-hidden">
         <div class="bg-gray-200 rounded-lg p-5" style="width: 325px;">
             <div class="flex flex-col text-xl leading-5 my-2">
@@ -29,13 +29,21 @@
             </div>
         </div>
         <div class="flex-grow px-4">
-            <div class="flex justify-center border-4 w-full border-dashed border-gray-200 rounded-lg h-96">                
+            <div class="px-2 pb-2 mb-4 font-bold text-3xl border-b-4 w-full border-dashed border-gray-300">
+                {{ $schedule->dateFocus }}
+            </div>
+            @foreach($recipes as $recipe)
+                @livewire('recipe-schedule', [
+                    'recipe' => $recipe,                    
+                ], key($recipe->slug))
+            @endforeach
+            <!--<div class="flex justify-center border-4 w-full border-dashed border-gray-200 rounded-lg h-96">                
                 <div class="flex flex-col items-center justify-center text-gray-500">
                     <img class="w-16 opacity-25" src="{{ asset('/icons/serving-dish.svg') }}" alt="serving-dish">
                     <span class="text-2xl">No hay raciones</span>
                     <span class="text-2xl">para este día</span>
                 </div>
-            </div>
+            </div>-->
         </div>
     </div>
 </div>
