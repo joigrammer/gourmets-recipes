@@ -17,9 +17,9 @@
             </x-jet-nav-link>
         </li>
         <li class="flex gap-1">
-            <img src="{{ asset('/icons/oven-glove.svg') }}" alt="recipe-book" class="w-5">
-            <x-jet-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('admin')" class="text-xl">
-                {{ __('APRENDE A COCINAR') }}
+            <img src="{{ asset('/icons/serving-dish.svg') }}" alt="recipe-book" class="w-6">
+            <x-jet-nav-link href="{{ route('rations.index') }}" :active="request()->routeIs('admin')" class="text-xl">
+                {{ __('RACIONES DEL DIA') }}
             </x-jet-nav-link>
         </li>
     </ul>

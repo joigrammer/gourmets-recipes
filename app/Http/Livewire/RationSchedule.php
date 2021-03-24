@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class RationSchedule extends Component
 {
-    const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; 
+    const DAYS = ['Domingo', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; 
 
     public $recipe;
     public $now; 

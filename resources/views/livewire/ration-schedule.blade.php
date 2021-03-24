@@ -41,7 +41,7 @@
                         @endforeach
                         @foreach($schedule['noOfDays'] as $date)
                         <div style="width: 14.28%; height: 140px" class="px-4 pt-2 border-r border-b relative">
-                            <div @click="showEventModal({{ $date }})" class="inline-flex w-6 h-6 items-center justify-center cursor-pointer text-center leading-none rounded-full transition ease-in-out duration-100  @if($this->isToday($date)) bg-blue-500 text-white @else text-gray-700 hover:bg-blue-200 @endif">{{ $date }}</div>
+                            <div class="inline-flex w-6 h-6 items-center justify-center cursor-pointer text-center leading-none rounded-full transition ease-in-out duration-100  @if($this->isToday($date)) bg-blue-500 text-white @else text-gray-700 hover:bg-blue-200 @endif">{{ $date }}</div>
                             <div style="height: 80px;" class="flex overflow-y-auto mt-1">
                                 <div class="absolute top-0 right-0 mt-2 mr-2 inline-flex items-center justify-center rounded-full text-sm h-6 bg-gray-400 px-1 leading-none uppercase" style="font-family: 'Truculenta', sans-serif;">
                                     25 rac.

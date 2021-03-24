@@ -1,5 +1,4 @@
 <x-app-layout>
-    @livewire('ration-schedule', ['recipe' => $recipe->id])
     <div>
         <link rel="dns-prefetch" href="//unpkg.com" />
         <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
@@ -23,6 +22,7 @@
                     <span class="text-xl">{{ $recipe->meal->name }}</span>
                 </li>
             </div>
+            @livewire('ration-schedule', ['recipe' => $recipe->id])
             <div x-data="app()" x-init="[initDate(), getNoOfDays()]" x-cloak>
                 <div class="container mx-auto">
 

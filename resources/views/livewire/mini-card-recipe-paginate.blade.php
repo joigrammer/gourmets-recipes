@@ -1,5 +1,4 @@
 <div>
-    <pre>{{ $recipes }}</pre>
     <div class="grid grid-cols-6">
         @foreach($recipes as $recipe)
             @livewire('mini-card-recipe', ['recipe' => $recipe])
