@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Ration;
 use App\Models\Recipe;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class RationScheduleTest extends Component
@@ -20,7 +21,7 @@ class RationScheduleTest extends Component
     {
         $this->focus = Carbon::now();
         $this->now = Carbon::now();
-        $this->recipes = Recipe::all();
+        $this->search($this->now->get('day'));
     }
 
     public function config()
@@ -54,6 +55,7 @@ class RationScheduleTest extends Component
         }
         return $blankDays;
     }
+
     // TODO: Corregir el mes previo, no organiza los espacios en blanco
     public function getNoOfDays()
     {
@@ -77,13 +79,12 @@ class RationScheduleTest extends Component
 
     public function search($date)
     {
-        //dd($this->focus->day($date));
-        //$this->focus = $this->focus->day($date);
-        $datetime = $this->focus;
-        $datetime->day($date)->isoFormat('Y-MM-D');
-        //dd($datetime);
-        $this->recipes = Ration::all()->where('available_at', '2021-03-'.$date);
-        dd($this->recipes);
+        $this->focusDay = $date;
+        $datetime = new Carbon($this->focus);
+        $datetime->day($date)->format('Y-m-d');
+        $this->recipes = Recipe::select('recipes.*')->join('rations', 'recipes.id', '=', 'rations.recipe_id')->where(function ($query) use ($datetime) {
+            $query->where('available_at', Carbon::parse($datetime)->format('Y-m-d'));
+        })->get();
     }
 
     public function render()

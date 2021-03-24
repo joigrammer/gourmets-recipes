@@ -39,7 +39,7 @@ class Recipe extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'integer',
+        'id' => 'integer'        
     ];
 
     public function sluggable(): array
@@ -93,11 +93,6 @@ class Recipe extends Model
     public function rations()
     {
         return $this->hasMany(\App\Models\Ration::class);   
-    }
-
-    public function rationsByDate()
-    {
-        return DB::table('recipes')->join('rations', 'recipes.id', '=', 'rations.recipe_id')->get();
     }
 
     public function hasRationAvailable()

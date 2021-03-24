@@ -29,21 +29,20 @@
             </div>
         </div>
         <div class="flex-grow px-4">
-            <div class="px-2 pb-2 mb-4 font-bold text-3xl border-b-4 w-full border-dashed border-gray-300">
+            <div class="px-2 pb-2 font-bold text-3xl border-b-4 w-full border-dashed border-gray-300">
                 {{ $schedule->dateFocus }}
             </div>
-            @foreach($recipes as $recipe)
+            @forelse($recipes as $recipe)
                 @livewire('recipe-schedule', [
-                    'recipe' => $recipe,                    
-                ], key($recipe->slug))
-            @endforeach
-            <!--<div class="flex justify-center border-4 w-full border-dashed border-gray-200 rounded-lg h-96">                
-                <div class="flex flex-col items-center justify-center text-gray-500">
+                    'recipe' => $recipe,
+                    ], key($recipe->slug))
+            @empty
+                <div class="flex flex-col items-center justify-center text-gray-500 mt-16">
                     <img class="w-16 opacity-25" src="{{ asset('/icons/serving-dish.svg') }}" alt="serving-dish">
                     <span class="text-2xl">No hay raciones</span>
                     <span class="text-2xl">para este día</span>
                 </div>
-            </div>-->
+            @endforelse
         </div>
     </div>
 </div>
