@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Ration;
 use App\Models\Recipe;
 use Carbon\Carbon;
 use Livewire\Component;
@@ -13,6 +14,7 @@ class RationScheduleTest extends Component
     public $now;
     public $focus;
     public $recipes;
+    public $focusDay;
 
     public function mount()
     {
@@ -36,7 +38,11 @@ class RationScheduleTest extends Component
 
     public function isToday($day)
     {
-        return $this->now->get('day') == $day;
+        if($this->now->get('month') == $this->focus->get('month') 
+            && $this->now->get('year') == $this->focus->get('year')){
+            return $this->now->get('day') == $day;
+        }   
+        return false;
     }
 
     public function getBlankDays()
@@ -71,13 +77,20 @@ class RationScheduleTest extends Component
 
     public function search($date)
     {
-        $this->recipes = Recipe::all()->take($date);
+        //dd($this->focus->day($date));
+        //$this->focus = $this->focus->day($date);
+        $datetime = $this->focus;
+        $datetime->day($date)->isoFormat('Y-MM-D');
+        //dd($datetime);
+        $this->recipes = Ration::all()->where('available_at', '2021-03-'.$date);
+        dd($this->recipes);
     }
 
     public function render()
     {
+        $schedule = json_decode($this->config());
         return view('livewire.ration-schedule-test', [
-            'schedule' => json_decode($this->config()),
+            'schedule' => $schedule,
             'recipes' => $this->recipes
         ]);
     }

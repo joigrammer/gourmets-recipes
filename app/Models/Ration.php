@@ -20,4 +20,14 @@ class Ration extends Model
     {
         return $this->belongsTo(\App\Models\Recipe::class);
     }
+
+    public function rationsAll()
+    {
+        return $this->all();
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(\App\Models\User::class);
+    }
 }

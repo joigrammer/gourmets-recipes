@@ -10,6 +10,7 @@ use Intervention\Image\ImageManagerStatic as Image;
 use Illuminate\Support\Facades\Storage;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Recipe extends Model
 {
@@ -92,6 +93,11 @@ class Recipe extends Model
     public function rations()
     {
         return $this->hasMany(\App\Models\Ration::class);   
+    }
+
+    public function rationsByDate()
+    {
+        return DB::table('recipes')->join('rations', 'recipes.id', '=', 'rations.recipe_id')->get();
     }
 
     public function hasRationAvailable()
