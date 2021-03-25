@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class Ration extends Model
@@ -16,6 +17,9 @@ class Ration extends Model
     public $timestamps = true;
     protected $guarded = ['id'];
     protected $fillable = ['available_at', 'qty', 'recipe_id'];
+    protected $casts = [
+        'available_at' => 'date:d-m-Y'
+    ];
 
     public function recipe()
     {
@@ -24,11 +28,16 @@ class Ration extends Model
 
     public function users()
     {
-        return $this->belongsToMany(\App\Models\User::class);
+        return $this->belongsToMany(\App\Models\User::class)->withPivot('rations');
     }
 
     public function reserved()
     {
-        return $this->users()->select([DB::raw('SUM(rations) as total')])->groupBy('ration_id')->get();
+        return $this->users()->select('rations')->sum('rations');
+    }
+
+    public function available()
+    {
+        return $this->qty - $this->reserved();
     }
 }

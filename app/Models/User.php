@@ -67,6 +67,16 @@ class User extends Authenticatable
 
     public function rations()
     {
-        return $this->belongsToMany(Ration::class);
+        return $this->belongsToMany(Ration::class)->withPivot('rations');
+    }
+
+    public function hasRation($id)
+    {
+        return $this->rations()->where('ration_id', $id)->first();
+    }
+
+    public function myReservedInRation($id)
+    {
+        return $this->rations()->select('rations')->where('ration_id', $id)->sum('rations');
     }
 }

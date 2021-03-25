@@ -16,6 +16,7 @@ class RationScheduleTest extends Component
     public $focus;
     public $recipes;
     public $focusDay;
+    public $rations;
 
     public function mount()
     {
@@ -82,6 +83,9 @@ class RationScheduleTest extends Component
         $this->focusDay = $date;
         $datetime = new Carbon($this->focus);
         $datetime->day($date)->format('Y-m-d');
+        $this->rations = Ration::select('rations.*')->join('recipes', 'recipes.id', '=', 'rations.recipe_id')->where(function ($query) use ($datetime) {
+            $query->where('available_at', Carbon::parse($datetime)->format('Y-m-d'));
+        })->get();
         $this->recipes = Recipe::select('recipes.*')->join('rations', 'recipes.id', '=', 'rations.recipe_id')->where(function ($query) use ($datetime) {
             $query->where('available_at', Carbon::parse($datetime)->format('Y-m-d'));
         })->get();
@@ -92,7 +96,8 @@ class RationScheduleTest extends Component
         $schedule = json_decode($this->config());
         return view('livewire.ration-schedule-test', [
             'schedule' => $schedule,
-            'recipes' => $this->recipes
+            'recipes' => $this->recipes,
+            'rations' => $this->rations
         ]);
     }
 }

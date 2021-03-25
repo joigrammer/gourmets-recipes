@@ -18,7 +18,7 @@
         </li>
         <li class="flex gap-1">
             <img src="{{ asset('/icons/serving-dish.svg') }}" alt="recipe-book" class="w-6">
-            <x-jet-nav-link href="{{ route('rations.index') }}" :active="request()->routeIs('admin')" class="text-xl">
+            <x-jet-nav-link href="{{ route('rations.index') }}" :active="request()->routeIs('rations.index')" class="text-xl">
                 {{ __('RACIONES DEL DIA') }}
             </x-jet-nav-link>
         </li>

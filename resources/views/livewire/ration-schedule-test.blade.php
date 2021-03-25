@@ -31,11 +31,12 @@
         <div class="flex-grow px-4">
             <div class="px-2 pb-2 font-bold text-3xl border-b-4 w-full border-dashed border-gray-300">
                 {{ $schedule->dateFocus }}
-            </div>
-            @forelse($recipes as $recipe)
+            </div>        
+            @forelse($rations as $ration)
                 @livewire('recipe-schedule', [
-                    'recipe' => $recipe,
-                    ], key($recipe->slug))
+                    'recipe' => $ration->recipe,
+                    'ration' => $ration,
+                    ], key($ration->recipe->slug))
             @empty
                 <div class="flex flex-col items-center justify-center text-gray-500 mt-16">
                     <img class="w-16 opacity-25" src="{{ asset('/icons/serving-dish.svg') }}" alt="serving-dish">

@@ -16,7 +16,10 @@ Route::prefix('recipes')->group(function () {
     Route::get('/meals/{slug}', [RecipePageController::class, 'meals'])->name('recipes.meals');
 });
 
-Route::get('/rations', [ RationController::class, 'index'])->name('rations.index');
+Route::prefix('rations')->group(function () {
+    Route::get('/', [RationController::class, 'index'])->name('rations.index');
+    Route::get('/{year}/{month}/{day}/{slug}', [RationController::class, 'create'])->name('rations.create');
+});
 
 Route::get('/recipes', [RecipePageController::class, 'index'])->name('dashboard');
 
