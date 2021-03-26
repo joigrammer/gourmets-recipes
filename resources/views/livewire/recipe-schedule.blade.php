@@ -19,9 +19,15 @@
                         </div>
                     @endif
                 @endauth
-                <div class="uppercase rounded-lg px-2 bg-green-400">
-                    Disponibles: {{ $ration->available() }}
-                </div>
+                @if($ration->isExpired())
+                    <div class="uppercase rounded-lg px-2 bg-red-400">
+                        Expirado
+                    </div>
+                @else
+                    <div class="uppercase rounded-lg px-2 bg-green-400">
+                        Disponibles: {{ $ration->available() }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>

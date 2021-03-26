@@ -23,6 +23,9 @@
             <form action="{{ route('rations.store', ['ration' => $ration->id]) }}" method="post">
                 @csrf
                 <input type="number" name="rations" id="rations" min="1" value="1" max="{{ $ration->available() }}">
+                @error('rations')
+                    <p>{{ $message }}</p>
+                @enderror
                 <button type="submit">Reservar</button>
             </form>
         </div>

@@ -108,7 +108,7 @@ class Recipe extends Model
             $query->where('rations.available_at', '=', new Carbon($date));
         })->get();
     }
-
+    
     public static function boot()
     {
         parent::boot();

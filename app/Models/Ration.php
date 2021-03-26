@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -44,5 +45,10 @@ class Ration extends Model
     public function available()
     {
         return $this->qty - $this->reserved();
+    }
+
+    public function isExpired()
+    {
+        return $this->available_at < Carbon::now();
     }
 }
