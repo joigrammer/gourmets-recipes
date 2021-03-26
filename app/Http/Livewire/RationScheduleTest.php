@@ -90,7 +90,8 @@ class RationScheduleTest extends Component
             $query->where('available_at', Carbon::parse($datetime)->format('Y-m-d'));
         })->get();
     }
-
+    // TODO: Existe un problema en el calendario, al seleccionar dos fechas que tengan las mismas recetas
+    // no actualiza o no se renderiza nuevamente el cuadrante del listado de recetas.
     public function render()
     {
         $schedule = json_decode($this->config());

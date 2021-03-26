@@ -4,6 +4,7 @@ use App\Http\Controllers\HomePageController;
 use App\Http\Controllers\RationController;
 use App\Http\Controllers\RecipePageController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Middleware\EnsureRationDateIsValid;
 use Illuminate\Support\Facades\Route;
 
 
@@ -18,7 +19,8 @@ Route::prefix('recipes')->group(function () {
 
 Route::prefix('rations')->group(function () {
     Route::get('/', [RationController::class, 'index'])->name('rations.index');
-    Route::get('/{year}/{month}/{day}/{slug}', [RationController::class, 'create'])->name('rations.create');
+    Route::get('/{year}/{month}/{day}/{slug}', [RationController::class, 'create'])->name('rations.create')->middleware(EnsureRationDateIsValid::class);
+    Route::post('/reserve', [RationController::class, 'store'])->name('rations.store')->middleware('auth');
 });
 
 Route::get('/recipes', [RecipePageController::class, 'index'])->name('dashboard');

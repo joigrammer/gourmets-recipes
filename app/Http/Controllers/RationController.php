@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Recipe;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class RationController extends Controller
@@ -13,11 +11,15 @@ class RationController extends Controller
         return view('rations.index');
     }
 
-    public function create($year, $month, $day, $slug)
+    public function create(Request $request)
     {
-        $date = Carbon::create($year, $month, $day);
-        dd($date);
-        $recipe = Recipe::where('slug', $slug)->first();
-        return view('rations.create', compact('recipe'));
+        $ration = $request->get('ration'); 
+        return view('rations.create', compact('ration'));
+    }
+
+    public function store(Request $request)
+    {
+        // TODO: Seguir la lógica de negocio
+        dd($request->get('ration'));
     }
 }

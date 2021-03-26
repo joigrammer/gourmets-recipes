@@ -23,7 +23,7 @@
                 @endforeach
                 @foreach($schedule->noOfDays as $date)
                 <div style="width: 14.28%; height: 35px" class="flex justify-center pt-2 border-r border-b relative">
-                    <div class="inline-flex w-6 h-6 items-center justify-center cursor-pointer text-center leading-none rounded-full transition ease-in-out duration-100 bg-white @if($this->isToday($date)) bg-blue-500 text-white @else text-gray-700 hover:bg-blue-200 @endif @if($focusDay == $date) bg-yellow-500 @endif" wire:click="search({{ $date }})">{{ $date }}</div>
+                    <div class="inline-flex w-7 h-7 items-center justify-center cursor-pointer text-center leading-none rounded-md transition ease-in-out duration-100 bg-white @if($this->isToday($date)) bg-blue-500 text-white @else text-gray-700 hover:bg-blue-200 @endif @if($focusDay == $date) bg-yellow-500 @endif" wire:click="search({{ $date }})">{{ $date }}</div>
                 </div>
                 @endforeach
             </div>
@@ -36,7 +36,7 @@
                 @livewire('recipe-schedule', [
                     'recipe' => $ration->recipe,
                     'ration' => $ration,
-                    ], key($ration->recipe->slug))
+                    ], key($ration->id))
             @empty
                 <div class="flex flex-col items-center justify-center text-gray-500 mt-16">
                     <img class="w-16 opacity-25" src="{{ asset('/icons/serving-dish.svg') }}" alt="serving-dish">

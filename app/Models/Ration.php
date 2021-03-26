@@ -26,6 +26,11 @@ class Ration extends Model
         return $this->belongsTo(\App\Models\Recipe::class);
     }
 
+    public function recipes()
+    {
+        return $this->hasMany(\App\Models\Recipe::class);
+    }
+
     public function users()
     {
         return $this->belongsToMany(\App\Models\User::class)->withPivot('rations');
