@@ -17,7 +17,11 @@ class EnsureRationDateIsValid
         $this->now = Carbon::now();
         $params = $request->route()->parameters();
         $this->date = Carbon::create($params['year'], $params['month'], $params['day']);
-        $request['ration'] = Ration::select('rations.*')->join('recipes', 'rations.recipe_id', '=', 'recipes.id')->where('slug', $params['slug'])->where('available_at', $this->date->format('Y-m-d'))->first();
+        $request['ration'] = Ration::select('rations.*')
+            ->join('recipes', 'rations.recipe_id', '=', 'recipes.id')
+            ->where('slug', $params['slug'])
+            ->where('available_at', $this->date->format('Y-m-d'))
+            ->first();
     }
 
     /**
@@ -29,12 +33,15 @@ class EnsureRationDateIsValid
      */
     public function handle(Request $request, Closure $next)
     {
+        session(['schedule:date' => $this->date]);
+
         if ($this->date < $this->now) {
-            return redirect()->route('rations.index');
+            return redirect()->route('rations.schedule');
         }
         if (! $request['ration'] ) {
-            return redirect()->route('rations.index');
+            return redirect()->route('rations.schedule');
         }
+    
         return $next($request);
     }
 }

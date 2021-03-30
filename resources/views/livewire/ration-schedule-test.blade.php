@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="flex-grow px-4">
-            <div class="px-2 pb-2 font-bold text-3xl border-b-4 w-full border-dashed border-gray-300">
+            <div class="px-2 pb-2 font-bold text-3xl">
                 {{ $schedule->dateFocus }}
             </div>        
             @forelse($rations as $ration)

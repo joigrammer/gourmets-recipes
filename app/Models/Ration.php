@@ -17,7 +17,7 @@ class Ration extends Model
     protected $primaryKey = 'id';
     public $timestamps = true;
     protected $guarded = ['id'];
-    protected $fillable = ['available_at', 'qty', 'recipe_id'];
+    protected $fillable = ['available_at', 'qty', 'recipe_id', 'user_id'];
     protected $casts = [
         'available_at' => 'date:d-m-Y'
     ];
@@ -37,6 +37,11 @@ class Ration extends Model
         return $this->belongsToMany(\App\Models\User::class)->withPivot('rations');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
+    }
+
     public function reserved()
     {
         return $this->users()->select('rations')->sum('rations');
@@ -47,8 +52,23 @@ class Ration extends Model
         return $this->qty - $this->reserved();
     }
 
-    public function isExpired()
+    public function hasExpired()
     {
         return $this->available_at < Carbon::now();
+    }
+
+    public function getWeekNameAttribute()
+    {
+        return Carbon::create($this->available_al);
+    }
+
+    public function getAvailableRationAttribute()
+    {
+        return $this->reserved() . "/" . $this->available();
+    }
+
+    public function getStatusAttribute()
+    {
+        return !$this->hasExpired();
     }
 }

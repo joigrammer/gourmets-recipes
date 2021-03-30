@@ -17,6 +17,7 @@ class CreateAllergensTable extends Migration
             $table->id();
             $table->string('name', 32);
             $table->string('slug', 32)->unique()->default('');
+            $table->string('icon');
             $table->timestamps();
         });
     }

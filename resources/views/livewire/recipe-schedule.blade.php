@@ -12,6 +12,15 @@
                 <p class="text-lg uppercase">{{ $recipe->meal->name }}</p>
             </div>
             <div class="flex justify-between gap-2 text-base">
+                @if($ration->hasExpired())
+                    <div class="uppercase rounded-lg px-2 bg-red-400">
+                        Expirado
+                    </div>
+                @else
+                    <div class="uppercase rounded-lg px-2 bg-green-400">
+                        Raciones: {{ $ration->reserved() }}/{{ $ration->qty }}
+                    </div>
+                @endif
                 @auth
                     @if(\Auth::user()->hasRation($ration->id))
                         <div class="rounded-lg px-2 text-lg bg-blue-300">
@@ -19,15 +28,6 @@
                         </div>
                     @endif
                 @endauth
-                @if($ration->isExpired())
-                    <div class="uppercase rounded-lg px-2 bg-red-400">
-                        Expirado
-                    </div>
-                @else
-                    <div class="uppercase rounded-lg px-2 bg-green-400">
-                        Disponibles: {{ $ration->available() }}
-                    </div>
-                @endif
             </div>
         </div>
     </div>

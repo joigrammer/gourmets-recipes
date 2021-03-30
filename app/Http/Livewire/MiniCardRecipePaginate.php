@@ -13,9 +13,10 @@ class MiniCardRecipePaginate extends Component
     {  
         return view('livewire.mini-card-recipe-paginate', [
             'recipes' => Recipe::select('recipes.*')->join('meals', 'recipes.meal_id', '=', 'meals.id')->where(function ($query) {
-                $query->where('meals.slug', $this->meal);
+                if (! empty($this->meal)) {
+                    $query->where('meals.slug', $this->meal);
+                }                
             })->paginate(12)
-            //'recipes' => Recipe::paginate(12)
         ]);
     }
 }

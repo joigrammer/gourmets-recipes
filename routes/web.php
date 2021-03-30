@@ -18,7 +18,7 @@ Route::prefix('recipes')->group(function () {
 });
 
 Route::prefix('rations')->group(function () {
-    Route::get('/', [RationController::class, 'index'])->name('rations.index');
+    Route::get('/', [RationController::class, 'index'])->name('rations.schedule');
     Route::get('/{year}/{month}/{day}/{slug}', [RationController::class, 'create'])->name('rations.create')->middleware(EnsureRationDateIsValid::class);
     Route::post('/reserve', [RationController::class, 'store'])->name('rations.store')->middleware('auth');
 });

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\RationRequest;
+use App\Models\Ration;
+use App\Models\User;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -19,6 +21,19 @@ class RationCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
+    public function store()
+    {
+        $user = User::find(backpack_auth()->user()->id);   
+        $params = $this->crud->getRequest()->request->all();
+        $servings = json_decode($params['servings'], true);
+        foreach ($servings as $key => $value) {
+            $servings[$key]['available_at'] = $params['available_at'];          
+        }        
+        $user->servings()->createMany($servings);
+        \Alert::success(trans('backpack::crud.insert_success'))->flash();
+        return \Redirect::to($this->crud->route);
+    }
+
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
      * 
@@ -28,7 +43,16 @@ class RationCrudController extends CrudController
     {
         CRUD::setModel(\App\Models\Ration::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/ration');
-        CRUD::setEntityNameStrings('ration', 'rations');
+        CRUD::setEntityNameStrings('ration', 'rations');     
+        CRUD::orderBy('available_at', 'desc');  
+        CRUD::enableDetailsRow();
+    }
+
+    public function showDetailsRow($id)
+    {
+        $ration = Ration::find($id);
+        return view('vendor.backpack.crud.rations.details_row.users', compact('ration'));
+        //CRUD::setDetailsRowView('vendor.backpack.crud.rations.details_row.users');
     }
 
     /**
@@ -38,19 +62,53 @@ class RationCrudController extends CrudController
      * @return void
      */
     protected function setupListOperation()
-    {
-        CRUD::column('id');
-        CRUD::column('available_at');
-        //CRUD::column('start_date');
-        //CRUD::column('end_date');
-        CRUD::column('qty');
-        CRUD::column('recipe_id');
+    {        
 
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
-         */
+        CRUD::addColumn([
+            'name' => 'available_at',
+            'label' => 'Fecha',
+            'type' => 'date',
+            'format' => 'DD/MM/YYYY'
+        ]);
+
+        CRUD::addColumn([
+            'name' => 'week_name',
+            'label' => 'Día',
+            'type' => 'date',
+            'format' => 'dddd'
+        ]);
+
+        CRUD::addColumn([
+            'name' => 'available_ration',
+            'label' => 'Raciones'
+        ]);
+
+        CRUD::addColumn([
+            'name' => 'recipe_id',
+            'label' => 'Receta',
+        ]);
+            
+        CRUD::addColumn([
+            'name' => 'status',
+            'label' => 'Estado',
+            'type' => 'boolean',
+            'options' => [
+                0 => '<span class="badge bg-danger">Expirado</span>',
+                1 => '<span class="badge bg-success">Disponible</span>'
+            ]
+        ]);
+
+        CRUD::addFilter([
+            'type' => 'date_range',
+            'name' => 'from_to',
+            'label' => 'Date range'
+        ],
+        false,
+        function ($value) {
+            $dates = json_decode($value);
+            $this->crud->addClause('where', 'available_at', '>=', $dates->from);
+            $this->crud->addClause('where', 'available_at', '<=', $dates->to);
+        });
     }
 
     /**
@@ -71,26 +129,26 @@ class RationCrudController extends CrudController
                 'format'   => 'dd-mm-yyyy',
              ],
         ]);
-
-        /*
+        
         CRUD::addField([
-            'name'  => ['start_date', 'end_date'],
-            'label' => 'Event Date Range',
-            'type'  => 'date_range',
-            'date_range_options' => [
-                'timePicker' => false,
-                'locale' => ['format' => 'DD/MM/YYYY']
+            'name' => 'servings',
+            'type' => 'repeatable',
+            'fields' => [
+                [
+                    'name' => 'qty',
+                    'label' => '',
+                    'type' => 'text',
+                    'wrapper' => ['class' => 'form-group col-md-2'],
+                ],
+                [
+                    'name' => 'recipe_id',
+                    'label' => '',
+                    'type' => 'select2',
+                    'entity' => 'recipes',
+                    'wrapper' => ['class' => 'form-group col-md-10'],
+                ]
             ]
         ]);
-        */
-        CRUD::field('qty');
-        CRUD::field('recipe_id');
-
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
-         */
     }
 
     /**
@@ -101,6 +159,28 @@ class RationCrudController extends CrudController
      */
     protected function setupUpdateOperation()
     {
-        $this->setupCreateOperation();
+        CRUD::setValidation(RationRequest::class);
+
+        CRUD::addField([
+            'name' => 'available_at',
+            'label' => 'Fecha pautada para:',
+            'type' => 'date_picker',
+            'date_picker_options' => [
+                'todayBtn' => 'linked',
+                'format'   => 'dd-mm-yyyy',
+             ],
+        ]);
+
+        CRUD::addField([
+            'name' => 'qty',
+            'type' => 'text',
+            'label' => 'Cant. Raciones'
+        ]);
+
+        CRUD::addField([
+            'name' => 'recipe_id',
+            'type' => 'select2',
+            'entify' => 'Receta'
+        ]);
     }
 }

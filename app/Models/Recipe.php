@@ -74,6 +74,15 @@ class Recipe extends Model
     {
         return $this->belongsToMany(\App\Models\Ingredient::class);
     }
+    // TODO: No funciona el distinct, coge todos los alergenos aún cuando están repetidos
+    public function allergens()
+    {
+        return $this->ingredients()
+                ->select('allergens.*')
+                ->join('allergen_ingredient', 'ingredients.id', '=', 'allergen_ingredient.ingredient_id')
+                ->join('allergens', 'allergen_ingredient.allergen_id', '=', 'allergens.id')
+                ->groupby('allergens.id')->distinct();
+    }
 
     public function tags()
     {

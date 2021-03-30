@@ -70,6 +70,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Ration::class)->withPivot('rations');
     }
 
+    public function servings()
+    {
+        return $this->hasMany(\App\Models\Ration::class);
+    }
+
     public function hasRation($id)
     {
         return $this->rations()->where('ration_id', $id)->first();

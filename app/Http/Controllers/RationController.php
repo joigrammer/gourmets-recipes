@@ -23,13 +23,11 @@ class RationController extends Controller
     {      
         $ration_id = $request->get('ration');
         $ration = Ration::find($ration_id);
-        $ration->users()->attach([
-            [                
-                'rations' => $request->get('rations'),                
-                'user_id' => \auth()->user()->id
-            ]
-        ]);
+        $ration->users()->attach([[                
+            'rations' => $request->get('rations'),                
+            'user_id' => \auth()->user()->id
+        ]]);
         $ration->save();
-        return redirect()->route('rations.index');
+        return redirect()->route('rations.schedule');
     }
 }

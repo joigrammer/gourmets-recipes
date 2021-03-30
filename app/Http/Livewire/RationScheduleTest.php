@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Ration;
 use App\Models\Recipe;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -18,11 +19,15 @@ class RationScheduleTest extends Component
     public $focusDay;
     public $rations;
 
-    public function mount()
+    public function mount(Request $request)
     {
         $this->focus = Carbon::now();
         $this->now = Carbon::now();
-        $this->search($this->now->get('day'));
+        if ($request->session()->exists('schedule:date')) {
+            $this->focus->day($request->session()->get('schedule:date')->get('day'));
+            $request->session()->forget('schedule:date');
+        }
+        $this->search($this->focus->get('day'));
     }
 
     public function config()
@@ -49,9 +54,9 @@ class RationScheduleTest extends Component
 
     public function getBlankDays()
     {
-        $dayOfWeek = $this->focus->dayOfWeek - 1;
+        $dayOfWeek = $this->focus->startOfMonth()->dayOfWeek; 
         $blankDays = [];
-        for ($i = 1; $i < $dayOfWeek; $i++) {
+        for ($i = 0; $i < $dayOfWeek; $i++) {
             array_push($blankDays, $i);
         }
         return $blankDays;
@@ -81,13 +86,12 @@ class RationScheduleTest extends Component
     public function search($date)
     {
         $this->focusDay = $date;
-        $datetime = new Carbon($this->focus);
-        $datetime->day($date)->format('Y-m-d');
-        $this->rations = Ration::select('rations.*')->join('recipes', 'recipes.id', '=', 'rations.recipe_id')->where(function ($query) use ($datetime) {
-            $query->where('available_at', Carbon::parse($datetime)->format('Y-m-d'));
+        $this->focus->day($date)->format('Y-m-d');
+        $this->rations = Ration::select('rations.*')->join('recipes', 'recipes.id', '=', 'rations.recipe_id')->where(function ($query) {
+            $query->where('available_at', Carbon::parse($this->focus)->format('Y-m-d'));
         })->get();
-        $this->recipes = Recipe::select('recipes.*')->join('rations', 'recipes.id', '=', 'rations.recipe_id')->where(function ($query) use ($datetime) {
-            $query->where('available_at', Carbon::parse($datetime)->format('Y-m-d'));
+        $this->recipes = Recipe::select('recipes.*')->join('rations', 'recipes.id', '=', 'rations.recipe_id')->where(function ($query) {
+            $query->where('available_at', Carbon::parse($this->focus)->format('Y-m-d'));
         })->get();
     }
     // TODO: Existe un problema en el calendario, al seleccionar dos fechas que tengan las mismas recetas
