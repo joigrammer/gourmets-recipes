@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\RecipeRequest;
+use App\Http\Requests\StoreRecipeRequest;
+use App\Models\Recipe;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class RecipeCrudController
@@ -18,6 +20,26 @@ class RecipeCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+
+    public function store(StoreRecipeRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            $data = $request->all();
+            $tags = $request->get('tags');
+            $ingredients = json_decode($request->get('ingredients'), true);
+            $recipe = Recipe::create($data);
+            $recipe->tags()->attach($tags);
+            // TODO: Falta validar cada ingrediente que corresponda a los valores de la tabla
+            $recipe->ingredients()->attach($ingredients);
+            DB::commit();
+            \Alert::success(trans('backpack::crud.insert_success'))->flash();            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        return \Redirect::to($this->crud->route);
+    }
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -59,7 +81,7 @@ class RecipeCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(RecipeRequest::class);
+        //CRUD::setValidation(StoreRecipeRequest::class);
 
         CRUD::addField([
             'name' => 'name',
@@ -77,10 +99,13 @@ class RecipeCrudController extends CrudController
             'entity' => 'meal'
         ]);
 
+        /* TODO: Integrity constraint violation: 1048 Column 'recipe_id' cannot be null */
         CRUD::addField([
             'name' => 'tags',
+            'type' => 'select2_multiple',
             'entity' => 'tags'
         ]);
+        
 
         CRUD::addField([
             'name' => 'extract',
@@ -94,9 +119,36 @@ class RecipeCrudController extends CrudController
         
         CRUD::addField([
             'name' => 'ingredients',
-            'type' => 'select2_multiple',
-            'entity' => 'ingredients'
+            'label' => 'Ingredients',
+            'type' => 'repeatable',
+            'fields' => [                
+                [
+                    'name' => "amount",
+                    'label' => 'amount',
+                    'type' => 'text',
+                    'wrapper' => ['class' => 'form-group col-md-2'],
+                ],
+                [
+                    'name' => 'measurement_id',
+                    'type' => 'select2',
+                    'model' => 'App\Models\Measurement',
+                    'attribute' => 'abbrev',
+                    'wrapper' => ['class' => 'form-group col-md-2'],
+                ],
+                [
+                    'name' => 'annotation',
+                    'type' => 'text',
+                    'wrapper' => ['class' => 'form-group col-md-4'],
+                ],
+                [
+                    'name' => 'ingredient_id',
+                    'type' => 'select2',
+                    'entity' => 'ingredients',
+                    'wrapper' => ['class' => 'form-group col-md-4'],
+                ],                
+            ]                  
         ]);
+
 
         CRUD::addField([
             'label' => "Icon",

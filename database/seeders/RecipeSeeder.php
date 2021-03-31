@@ -20,9 +20,9 @@ class RecipeSeeder extends Seeder
             $recipe->tags()->saveMany(
                 Tag::inRandomOrder()->limit(rand(0,3))->get()
             );
-            $recipe->ingredients()->saveMany(
+            /*$recipe->ingredients()->saveMany(
                 Ingredient::inRandomOrder()->limit(rand(2, 8))->get()
-            );
+            );*/
         });
     }
 }

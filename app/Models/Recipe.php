@@ -9,8 +9,6 @@ use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as Image;
 use Illuminate\Support\Facades\Storage;
 use Cviebrock\EloquentSluggable\Sluggable;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class Recipe extends Model
 {
@@ -30,7 +28,7 @@ class Recipe extends Model
         'body',
         'image',
         'meal_id',
-        'user_id'
+        'user_id',
     ];
 
     /**
@@ -50,21 +48,7 @@ class Recipe extends Model
             ]
         ];
     }
-    
-    public function __construct(array $attributes = [])
-    {           
-        $this->creating([$this, 'onCreating']);
-        parent::__construct($attributes);
-    }
 
-    public function onCreating(Recipe $row)
-    {        
-        if (!Auth::id()) {
-            return false;
-        }
-        $row->setAttribute('user_id', Auth::id());
-    }
-    
     public function meal()
     {
         return $this->belongsTo(Meal::class);
@@ -72,9 +56,17 @@ class Recipe extends Model
 
     public function ingredients()
     {
-        return $this->belongsToMany(\App\Models\Ingredient::class);
+        return $this->belongsToMany(Ingredient::class, 'ingredient_measurement_recipe')->select('amount', 'annotation', 'ingredient_measurement_recipe.*')
+                    ->withPivot(['amount', 'annotation', 'measurement_id'])
+                    ->using(IngredientMeasurementRecipe::class);
     }
-    // TODO: No funciona el distinct, coge todos los alergenos aún cuando están repetidos
+    
+    public function measurements()
+    {
+        return $this->belongsToMany(Measurement::class, 'ingredient_measurement_recipe')
+                    ->withPivot('amount', 'annotation', 'ingredient_id');
+    }
+    
     public function allergens()
     {
         return $this->ingredients()

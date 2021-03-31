@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             AllergenSeeder::class,
             IngredientSeeder::class,
             RecipeSeeder::class,
+            MeasurementSeeder::class,
         ]);
     }
 }

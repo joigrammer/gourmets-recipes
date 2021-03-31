@@ -25,6 +25,7 @@ class RecipeRequest extends FormRequest
      */
     public function rules()
     {
+        dd($this->request);
         return [
             'name' => 'required|min:5|max:70',
             'meal_id' => 'required',

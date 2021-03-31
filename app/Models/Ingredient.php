@@ -32,7 +32,6 @@ class Ingredient extends Model
         'category_id' => 'integer',
     ];
 
-
     public function tags()
     {
         return $this->belongsToMany(\App\Models\Tag::class);
@@ -45,7 +44,12 @@ class Ingredient extends Model
 
     public function recipes()
     {
-        return $this->belongsToMany(\App\Models\Recipe::class);
+        return $this->belongsToMany(Recipe::class, 'ingredient_measurement_recipe')->withPivot('amount', 'annotation', 'measurement_id');
+    }
+
+    public function measurements()
+    {
+        return $this->belongsToMany(Measurement::class, 'ingredient_measurement_recipe')->withPivot('amount', 'annotation', 'recipe_id');
     }
 
     public function category()

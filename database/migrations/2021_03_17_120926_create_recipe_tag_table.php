@@ -16,8 +16,10 @@ class CreateRecipeTagTable extends Migration
         Schema::disableForeignKeyConstraints();
 
         Schema::create('recipe_tag', function (Blueprint $table) {
-            $table->foreignId('recipe_id');
-            $table->foreignId('tag_id');
+            $table->unsignedBigInteger('recipe_id');
+            $table->foreign('recipe_id')->references('id')->on('recipes')->onDelete('cascade');
+            $table->unsignedBigInteger('tag_id');
+            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
         });
 
         Schema::enableForeignKeyConstraints();
