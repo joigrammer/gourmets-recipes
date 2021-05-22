@@ -37,7 +37,7 @@ class Recipe extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'integer'        
+        'id' => 'integer'
     ];
 
     public function sluggable(): array
@@ -57,23 +57,23 @@ class Recipe extends Model
     public function ingredients()
     {
         return $this->belongsToMany(Ingredient::class, 'ingredient_measurement_recipe')->select('amount', 'annotation', 'ingredient_measurement_recipe.*')
-                    ->withPivot(['amount', 'annotation', 'measurement_id'])
-                    ->using(IngredientMeasurementRecipe::class);
+            ->withPivot(['amount', 'annotation', 'measurement_id'])
+            ->using(IngredientMeasurementRecipe::class);
     }
-    
+
     public function measurements()
     {
         return $this->belongsToMany(Measurement::class, 'ingredient_measurement_recipe')
-                    ->withPivot('amount', 'annotation', 'ingredient_id');
+            ->withPivot('amount', 'annotation', 'ingredient_id');
     }
-    
+
     public function allergens()
     {
         return $this->ingredients()
-                ->select('allergens.*')
-                ->join('allergen_ingredient', 'ingredients.id', '=', 'allergen_ingredient.ingredient_id')
-                ->join('allergens', 'allergen_ingredient.allergen_id', '=', 'allergens.id')
-                ->groupby('allergens.id')->distinct();
+            ->select('allergens.*')
+            ->join('allergen_ingredient', 'ingredients.id', '=', 'allergen_ingredient.ingredient_id')
+            ->join('allergens', 'allergen_ingredient.allergen_id', '=', 'allergens.id')
+            ->groupby('allergens.id')->distinct();
     }
 
     public function tags()
@@ -93,7 +93,7 @@ class Recipe extends Model
 
     public function rations()
     {
-        return $this->hasMany(\App\Models\Ration::class);   
+        return $this->hasMany(\App\Models\Ration::class);
     }
 
     public function hasRationAvailable()
@@ -109,38 +109,13 @@ class Recipe extends Model
             $query->where('rations.available_at', '=', new Carbon($date));
         })->get();
     }
-    
-    public static function boot()
-    {
-        parent::boot();
-        static::deleting(function($obj) {
-            Storage::delete(Str::replaceFirst('storage/','public/', $obj->image));
-        });
+
+    public static function getSlugWithLink($route, $slug) {
+        return '<a href="'.route($route, $slug).'" target="_blank">'.$slug.'</a>';
     }
 
-    public function setImageAttribute($value)
-    {
-        $attribute_name = "image";
-        $destination_path = "public/recipes";
-
-        if ($value==null) {
-            Storage::delete($this->{$attribute_name});
-
-            $this->attributes[$attribute_name] = null;
-        }
-
-        if (Str::startsWith($value, 'data:image'))
-        {
-            $image = Image::make($value)->encode('jpg', 90);
-
-            $filename = md5($value.time()).'.jpg';
-
-            Storage::put($destination_path.'/'.$filename, $image->stream());
-
-            Storage::delete(Str::replaceFirst('storage/','public/', $this->{$attribute_name}));
-
-            $public_destination_path = Str::replaceFirst('public/', 'storage/', $destination_path);
-            $this->attributes[$attribute_name] = $public_destination_path.'/'.$filename;
-        }
+    public static function getNameWithLink($route, $name) {
+        return '<a href="'.route($route, $slug).'" target="_blank">'.$name.'</a>';
     }
+
 }

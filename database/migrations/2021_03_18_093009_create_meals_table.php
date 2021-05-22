@@ -17,7 +17,7 @@ class CreateMealsTable extends Migration
             $table->id();
             $table->string('name', 32);
             $table->string('slug', 32)->unique();
-            $table->string('description', 192);
+            $table->string('description', 192)->nullable(true);
             $table->string('image')->nullable();
             $table->timestamps();
         });

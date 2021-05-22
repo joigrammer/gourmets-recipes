@@ -8,24 +8,23 @@
                     @foreach($recipe->tags as $tag)
                     <a href="#" class="bg-gray-200 text-lg rounded-lg px-0.5 hover:bg-gray-200">#{{ $tag->name }}</a>
                     @endforeach
-                    <div class="flex justify-between">
-                        <li class="flex items-center rounded gap-0.5 py-2 uppercase">
+                    <div class="flex justify-between items-end">
+                        <div class="flex items-center rounded gap-0.5 py-2 uppercase">
                             <img class="w-7" src="{{ \Illuminate\Support\Facades\Storage::url($recipe->meal->image) }}" alt="{{ $recipe->meal->name }}">
                             <span class="text-xl">{{ $recipe->meal->name }}</span>
-                        </li>
-                        <ul class="flex items-center gap-0.5">
-                            @foreach($recipe->allergens as $allergen)
-                            <li class="p-1 rounded-full border border-black bg-white">
-                                <img class="w-7" src="{{ \Illuminate\Support\Facades\Storage::url($allergen->icon) }}" alt="{{ $allergen->name }}">
-                            </li>
-                            @endforeach
-                        </ul>
+                        </div>
+                        <div class="flex items-center gap-1 py-2">                            
+                            <span class="text-3xl">{{ $recipe->user->name }}</span>
+                        </div>
                     </div>
                 </div>
-                <div class="h-72">
-                    <img class="w-full h-full opacity-75 rounded-t-lg" src="{{ asset('/storage/images/recipes/ensalada-cesar.jpg') }}" alt="Sunset in the mountains" style="object-fit: cover;">
+                <div class="h-2/6">
+                    <img class="w-full h-full opacity-75 rounded-t-lg" src="{{ \Illuminate\Support\Facades\Storage::url($recipe->image) }}" alt="{{ $recipe->name }}" style="object-fit: cover;">
                 </div>
-                @livewire('table-ingredient-recipe', ['ingredients' => $recipe->ingredients])
+                @livewire('table-ingredient-recipe', [
+                    'ingredients' => $recipe->ingredients,
+                    'allergens' => $recipe->allergens
+                ])
                 <div class="p-5" id="body">{!! $recipe->body !!}</div>
             </div>
             <div class="col-span-3">

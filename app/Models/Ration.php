@@ -5,13 +5,19 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Ration extends Model
 {
     use \Backpack\CRUD\app\Models\Traits\CrudTrait;
     use HasFactory;
+
+    const EXPIRED = 'EXPIRED';
+    const AVAILABLE = 'AVAILABLE';
+    const NO_AVAILABLE = 'NO_AVAILABLE';
 
     protected $table = 'rations';
     protected $primaryKey = 'id';
@@ -21,6 +27,15 @@ class Ration extends Model
     protected $casts = [
         'available_at' => 'date:d-m-Y'
     ];
+
+    public static function getSpanStatusFromCodeName(): array
+    {
+        return array(
+            self::NO_AVAILABLE => '<span class="badge bg-success">Disponible</span>',
+            self::AVAILABLE => '<span class="badge bg-gray">No Disponible</span>',
+            self::EXPIRED => '<span class="badge bg-danger">Expirado</span>'
+        );
+    }
 
     public function recipe()
     {
@@ -59,16 +74,23 @@ class Ration extends Model
 
     public function getWeekNameAttribute()
     {
-        return Carbon::create($this->available_al);
+        return $this->available_at;
     }
 
     public function getAvailableRationAttribute()
     {
-        return $this->reserved() . "/" . $this->available();
+        return $this->reserved() . "/" . $this->qty;
     }
 
     public function getStatusAttribute()
     {
         return !$this->hasExpired();
+    }
+
+    public function getStatusCodeAttribute()
+    {
+        if ($this->hasExpired()) return self::EXPIRED;
+        if ($this->available() < $this->qty) return self::AVAILABLE;
+        else return self::NO_AVAILABLE;
     }
 }

@@ -1,5 +1,7 @@
 <div class="m-1 bg-gray-100 hover:opacity-80 rounded-b-lg border-b text-lg border-gray-300 hover:bg-gray-100 col-span-2" style="font-family: 'Truculenta', sans-serif;">
-    <img class="w-full opacity-75 rounded-t-lg" src="{{ asset('/storage/images/recipes/ensalada-cesar.jpg') }}" alt="Sunset in the mountains">
+    <div class="h-36">
+        <img class="w-full h-full opacity-75 rounded-t-lg" src="{{ \Illuminate\Support\Facades\Storage::url($recipe->image) }}" alt="{{ $recipe->name }}" style="object-fit: cover;">
+    </div>
     <div class="flex items-center gap-0.5 pl-4 text-lg py-0.5 border-b border-gray-200 hover:underline">
         <img class="w-5" src="{{ \Illuminate\Support\Facades\Storage::url($recipe->meal->image) }}" alt="{{ $recipe->meal->name }}">
         <a href="#">{{ $recipe->meal->name }}</a>

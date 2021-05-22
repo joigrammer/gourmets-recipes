@@ -29,7 +29,6 @@ class Tag extends Model
         'id' => 'integer',
     ];
 
-
     public function recipes()
     {
         return $this->belongsToMany(\App\Models\Recipe::class);

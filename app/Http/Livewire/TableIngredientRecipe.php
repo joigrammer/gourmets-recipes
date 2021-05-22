@@ -7,9 +7,13 @@ use Livewire\Component;
 class TableIngredientRecipe extends Component
 {
     public $ingredients;
+    public $allergens;
 
     public function render()
     {
-        return view('livewire.table-ingredient-recipe', $this->ingredients);
+        return view('livewire.table-ingredient-recipe', [
+            'ingredients' => $this->ingredients,
+            'allergens'   => $this->allergens
+        ]);
     }
 }

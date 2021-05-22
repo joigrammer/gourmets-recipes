@@ -36,3 +36,9 @@
         Rations
     </a>
 </li>
+<li class='nav-item'>
+    <a class='nav-link' href='{{ backpack_url('measurement') }}'>
+        <i class="fas fa-weight"></i>
+        Measurements
+    </a>
+</li>

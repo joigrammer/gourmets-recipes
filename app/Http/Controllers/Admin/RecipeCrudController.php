@@ -3,10 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\StoreRecipeRequest;
+use App\Http\Requests\UpdateRecipeRequest;
 use App\Models\Recipe;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManagerStatic as Image;
 
 /**
  * Class RecipeCrudController
@@ -19,7 +24,7 @@ class RecipeCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation { show as traitShow; }
 
     public function store(StoreRecipeRequest $request)
     {
@@ -29,11 +34,39 @@ class RecipeCrudController extends CrudController
             $tags = $request->get('tags');
             $ingredients = json_decode($request->get('ingredients'), true);
             $recipe = Recipe::create($data);
+            if ($request->hasFile('image')) {
+                $recipe->image = $request->file('image')->store('public/img/recipes');
+                $recipe->save();
+            }
             $recipe->tags()->attach($tags);
             // TODO: Falta validar cada ingrediente que corresponda a los valores de la tabla
             $recipe->ingredients()->attach($ingredients);
             DB::commit();
-            \Alert::success(trans('backpack::crud.insert_success'))->flash();            
+            \Alert::success(trans('backpack::crud.insert_success'))->flash();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        return \Redirect::to($this->crud->route);
+    }
+
+    public function update(UpdateRecipeRequest $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $recipe = Recipe::find($id);
+            $data = $request->all();
+            $tags = $request->get('tags');
+            $ingredients = json_decode($request->get('ingredients'), true);
+            if ($request->hasFile('image')) {
+                Storage::delete($recipe->image);
+                $data['image'] = $request->file('image')->store('public/img/recipes');
+            }
+            $recipe->update($data);
+            $recipe->tags()->sync($tags);
+            $recipe->ingredients()->sync($ingredients);
+            DB::commit();
+            \Alert::success(trans('backpack::crud.insert_success'))->flash();
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
@@ -43,7 +76,7 @@ class RecipeCrudController extends CrudController
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
-     * 
+     *
      * @return void
      */
     public function setup()
@@ -51,77 +84,118 @@ class RecipeCrudController extends CrudController
         CRUD::setModel(\App\Models\Recipe::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/recipe');
         CRUD::setEntityNameStrings('recipe', 'recipes');
+        CRUD::enableDetailsRow();
     }
 
+    public function showDetailsRow($id)
+    {
+        $recipe = Recipe::find($id);
+        return view('vendor.backpack.crud.recipes.details_row.ingredients', compact('recipe'));
+    }
     /**
      * Define what happens when the List operation is loaded.
-     * 
+     *
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
     protected function setupListOperation()
     {
-        CRUD::column('name');
-        CRUD::column('slug');
-        CRUD::column('extract');
-        CRUD::column('body');
+        CRUD::addColumn([
+            'name' => 'name',
+            'label' => 'Name',
+            'type' => 'text',
+        ]);
 
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
-         */
+        CRUD::addColumn([
+            'name' => 'allergens',
+            'label' => 'Contain'
+        ]);
+
+        CRUD::addColumn([
+            'name' => 'created_at',
+            'label' => 'created at',
+            'type' => 'date'
+        ]);
+
+        CRUD::addColumn([
+            'name' => 'user.name',
+            'label' => 'User',
+            'type' => 'text'
+        ]);
+
+        CRUD::addColumn([
+            'name' => 'ingredients',
+            'label' => 'Ingredients',
+            'type' => 'array_count',
+            'suffix' => 'Ingredients'
+        ]);
     }
 
     /**
      * Define what happens when the Create operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-create
      * @return void
      */
     protected function setupCreateOperation()
     {
-        //CRUD::setValidation(StoreRecipeRequest::class);
+        $this->crud->enableTabs();
+        $this->crud->enableHorizontalTabs();
 
         CRUD::addField([
             'name' => 'name',
-            'type' => 'text'
+            'type' => 'text',
+            'tab' => 'Recipe'
         ]);
-        
+
         CRUD::addField([
             'name' => 'slug',
-            'type' => 'text'
+            'type' => 'text',
+            'tab' => 'Recipe'
         ]);
 
         CRUD::addField([
             'name' => 'meal_id',
             'type' => 'select2',
-            'entity' => 'meal'
+            'entity' => 'meal',
+            'tab' => 'Recipe'
         ]);
 
-        /* TODO: Integrity constraint violation: 1048 Column 'recipe_id' cannot be null */
         CRUD::addField([
             'name' => 'tags',
             'type' => 'select2_multiple',
-            'entity' => 'tags'
+            'entity' => 'tags',
+            'tab' => 'Recipe'
         ]);
-        
+
 
         CRUD::addField([
             'name' => 'extract',
-            'type' => 'textarea'
+            'type' => 'textarea',
+            'tab' => 'Recipe'
         ]);
 
         CRUD::addField([
             'name' => 'body',
-            'type' => 'ckeditor'
+            'type' => 'ckeditor',
+            'tab' => 'Recipe'
         ]);
-        
+
+        CRUD::addField([
+            'type' => 'upload',
+            'name' => 'image',
+            'label' => 'Image',
+            'upload' => true,
+            'disk' => 'public',
+            'tab' => 'Recipe'
+        ]);
+
         CRUD::addField([
             'name' => 'ingredients',
             'label' => 'Ingredients',
             'type' => 'repeatable',
-            'fields' => [                
+            'tab' => 'Ingredients',
+            'fields' => [
                 [
                     'name' => "amount",
                     'label' => 'amount',
@@ -145,29 +219,21 @@ class RecipeCrudController extends CrudController
                     'type' => 'select2',
                     'entity' => 'ingredients',
                     'wrapper' => ['class' => 'form-group col-md-4'],
-                ],                
-            ]                  
+                ],
+            ]
         ]);
+    }
 
+    public function show($id)
+    {
+        $recipe = Recipe::find($id);
+        return redirect()->route('recipes.show', $recipe->slug);
 
-        CRUD::addField([
-            'label' => "Icon",
-            'name' => "image",
-            'type' => 'image',
-            'crop' => false, 
-            'aspect_ratio' => 1,
-        ]);
-
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
-         */
     }
 
     /**
      * Define what happens when the Update operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-update
      * @return void
      */

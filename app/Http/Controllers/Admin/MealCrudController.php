@@ -3,8 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\MealRequest;
+use App\Http\Requests\StoreMealRequest;
+use App\Http\Requests\UpdateMealRequest;
+use App\Models\Meal;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class MealCrudController
@@ -18,6 +23,46 @@ class MealCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+
+
+    public function store(StoreMealRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            $data = $request->all();
+            $meal = Meal::create($data);
+            if ($request->hasFile('image')) {
+                $meal->image = $request->file('image')->store('public/icons/meals');
+                $meal->save();
+            }
+            DB::commit();
+            \Alert::success(trans('backpack::crud.insert_success'))->flash();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        return \Redirect::to($this->crud->route);
+    }
+
+    public function update(UpdateMealRequest $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $meal = Meal::find($id);
+            $data = $request->all();
+            if ($request->hasFile('image')) {
+                Storage::delete($meal->image);
+                $data['image'] = $request->file('image')->store('public/icons/meals');
+            }
+            $meal->update($data);
+            DB::commit();
+            \Alert::success(trans('backpack::crud.insert_success'))->flash();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        return \Redirect::to($this->crud->route);
+    }
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -39,13 +84,18 @@ class MealCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::setFromDb(); // columns
 
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
-         */
+        CRUD::addColumn([
+            'name' => 'name',
+            'type' => 'text',
+        ]);
+
+        // TODO: Algunas imágenes desaparecen al definir el estilo float, y con disk se posicionan de otra forma
+        CRUD::addColumn([
+            'name' => 'image',
+            'type' => 'image',
+            'disk' => 'local',
+        ]);
     }
 
     /**
@@ -58,13 +108,28 @@ class MealCrudController extends CrudController
     {
         CRUD::setValidation(MealRequest::class);
 
-        CRUD::setFromDb(); // fields
+        CRUD::addField([
+            'name' => 'name',
+            'type' => 'text'
+        ]);
 
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
-         */
+        CRUD::addField([
+            'name' => 'slug',
+            'type' => 'text'
+        ]);
+
+        CRUD::addField([
+            'name' => 'description',
+            'type' => 'textarea'
+        ]);
+
+        CRUD::addField([
+            'type' => 'upload',
+            'name' => 'image',
+            'label' => 'Image',
+            'upload' => true,
+            'disk' => 'public',
+        ]);
     }
 
     /**

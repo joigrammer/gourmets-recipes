@@ -39,16 +39,21 @@ class IngredientCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column('name');
-        CRUD::column('slug');
-        CRUD::column('description');
-        CRUD::column('category_id');
+        CRUD::addColumn([
+            'name' => 'name',
+            'type' => 'text'
+        ]);
 
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
-         */
+        CRUD::addColumn([
+            'name' => 'category.name',
+            'label' => 'Category',
+            'type' => 'text'
+        ]);
+
+        CRUD::addColumn([
+            'name' => 'allergens',
+            'label' => 'Contain'
+        ]);
     }
 
     /**
@@ -65,6 +70,10 @@ class IngredientCrudController extends CrudController
         CRUD::field('slug');
         CRUD::field('description');
         CRUD::field('category_id');
+        CRUD::addField([
+            'name' => 'allergens',
+            'entity' => 'allergens'
+        ]);
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:

@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\CategoryRequest;
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
+use App\Models\Category;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class CategoryCrudController
@@ -18,6 +22,45 @@ class CategoryCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+
+    public function store(StoreCategoryRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            $data = $request->all();
+            $category = Category::create($data);
+            if ($request->hasFile('image')) {
+                $category->image = $request->file('image')->store('/public/icons/categories');
+                $category->save();
+            }
+            DB::commit();
+            \Alert::success(trans('backpack::crud.insert_success'))->flash();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        return \Redirect::to($this->crud->route);
+    }
+
+    public function update(UpdateCategoryRequest $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $category = Category::find($id);
+            $data = $request->all();
+            $category->update($data);
+            if ($request->hasFile('image')) {
+                $category->image = $request->file('image')->store('/public/icons/categories');
+                $category->save();
+            }
+            DB::commit();
+            \Alert::success(trans('backpack::crud.insert_success'))->flash();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        return \Redirect::to($this->crud->route);
+    }
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -39,14 +82,21 @@ class CategoryCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column('name');
-        CRUD::column('slug');
+        CRUD::addColumn([
+            'name' => 'name',
+            'type' => 'text'
+        ]);
 
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
-         */
+        CRUD::addColumn([
+            'name' => 'slug',
+            'type' => 'text'
+        ]);
+
+        CRUD::addColumn([
+            'name' => 'image',
+            'type' => 'image',
+            'disk' => 'local',
+        ]);
     }
 
     /**
@@ -57,17 +107,17 @@ class CategoryCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(CategoryRequest::class);
+        //CRUD::setValidation(CategoryRequest::class);
 
         CRUD::field('name');
         CRUD::field('slug');
 
         CRUD::addField([
-            'label' => "Icon",
-            'name' => "image",
-            'type' => 'image',
-            'crop' => true, // set to true to allow cropping, false to disable
-            'aspect_ratio' => 1, // omit or set to 0 to allow any aspect ratio
+            'type' => 'upload',
+            'name' => 'image',
+            'label' => 'Image',
+            'upload' => true,
+            'disk' => 'public',
         ]);
     }
 

@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\StoreTagRequest;
 use App\Http\Requests\TagRequest;
+use App\Http\Requests\UpdateTagRequest;
+use App\Models\Tag;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class TagCrudController
@@ -18,6 +22,37 @@ class TagCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+
+    public function store(StoreTagRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            $data = $request->all();
+            Tag::create($data);
+            DB::commit();
+            \Alert::success(trans('backpack::crud.insert_success'))->flash();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        return \Redirect::to($this->crud->route);
+    }
+
+    public function update(UpdateTagRequest $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $tag = Tag::find($id);
+            $data = $request->all();
+            $tag->update($data);
+            DB::commit();
+            \Alert::success(trans('backpack::crud.insert_success'))->flash();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        return \Redirect::to($this->crud->route);
+    }
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -57,8 +92,6 @@ class TagCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(TagRequest::class);
-
         CRUD::field('name');
         CRUD::field('slug');
 

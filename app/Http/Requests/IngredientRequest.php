@@ -26,7 +26,7 @@ class IngredientRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|min:5|max:64',
+            'name' => 'required|min:2|max:64',
             'description' => ''
         ];
     }

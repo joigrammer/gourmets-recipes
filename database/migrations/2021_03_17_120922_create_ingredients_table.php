@@ -18,8 +18,8 @@ class CreateIngredientsTable extends Migration
         Schema::create('ingredients', function (Blueprint $table) {
             $table->id();
             $table->string('name', 64);
-            $table->string('slug')->unique()->default('');
-            $table->string('description', 192);
+            $table->string('slug')->unique();
+            $table->string('description', 192)->nullable(true);
             $table->foreignId('category_id')->constrained();
             $table->timestamps();
         });

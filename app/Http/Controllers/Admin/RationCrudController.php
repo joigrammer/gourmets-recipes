@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\RationRequest;
 use App\Models\Ration;
+use App\Models\Recipe;
 use App\Models\User;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class RationCrudController
@@ -23,12 +25,12 @@ class RationCrudController extends CrudController
 
     public function store()
     {
-        $user = User::find(backpack_auth()->user()->id);   
+        $user = User::find(backpack_auth()->user()->id);
         $params = $this->crud->getRequest()->request->all();
         $servings = json_decode($params['servings'], true);
         foreach ($servings as $key => $value) {
-            $servings[$key]['available_at'] = $params['available_at'];          
-        }        
+            $servings[$key]['available_at'] = $params['available_at'];
+        }
         $user->servings()->createMany($servings);
         \Alert::success(trans('backpack::crud.insert_success'))->flash();
         return \Redirect::to($this->crud->route);
@@ -36,15 +38,15 @@ class RationCrudController extends CrudController
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
-     * 
+     *
      * @return void
      */
     public function setup()
     {
         CRUD::setModel(\App\Models\Ration::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/ration');
-        CRUD::setEntityNameStrings('ration', 'rations');     
-        CRUD::orderBy('available_at', 'desc');  
+        CRUD::setEntityNameStrings('ration', 'rations');
+        CRUD::orderBy('available_at', 'desc');
         CRUD::enableDetailsRow();
     }
 
@@ -57,12 +59,12 @@ class RationCrudController extends CrudController
 
     /**
      * Define what happens when the List operation is loaded.
-     * 
+     *
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
     protected function setupListOperation()
-    {        
+    {
 
         CRUD::addColumn([
             'name' => 'available_at',
@@ -84,18 +86,21 @@ class RationCrudController extends CrudController
         ]);
 
         CRUD::addColumn([
-            'name' => 'recipe_id',
-            'label' => 'Receta',
+            'name' => 'url',
+            'label' => 'Recipe',
+            'type' => 'closure',
+            'function' => function($ration) {
+                return Recipe::getSlugWithLink('recipes.show', $ration->recipe->slug);
+            }
         ]);
-            
+
         CRUD::addColumn([
-            'name' => 'status',
+            'name' => 'status_code',
             'label' => 'Estado',
-            'type' => 'boolean',
-            'options' => [
-                0 => '<span class="badge bg-danger">Expirado</span>',
-                1 => '<span class="badge bg-success">Disponible</span>'
-            ]
+            'type' => 'closure',
+            'function' => function($ration) {
+                return Ration::getSpanStatusFromCodeName()[$ration->status_code];
+            }
         ]);
 
         CRUD::addFilter([
@@ -113,14 +118,14 @@ class RationCrudController extends CrudController
 
     /**
      * Define what happens when the Create operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-create
      * @return void
      */
     protected function setupCreateOperation()
     {
         CRUD::setValidation(RationRequest::class);
-        
+
         CRUD::addField([
             'name' => 'available_at',
             'type' => 'date_picker',
@@ -129,7 +134,7 @@ class RationCrudController extends CrudController
                 'format'   => 'dd-mm-yyyy',
              ],
         ]);
-        
+
         CRUD::addField([
             'name' => 'servings',
             'type' => 'repeatable',
@@ -153,7 +158,7 @@ class RationCrudController extends CrudController
 
     /**
      * Define what happens when the Update operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-update
      * @return void
      */
