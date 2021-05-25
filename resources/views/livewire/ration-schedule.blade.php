@@ -1,110 +1,54 @@
-<div>
-    <div x-data="app()" x-init="[initDate(), getNoOfDays()]" x-cloak>
-        <div class="container mx-auto">
-
-            <div class="font-bold text-gray-800 text-xl mb-4 uppercase">Calendario de Raciones Disponibles</div>
-
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-
-                <div class="flex items-center justify-between py-2 px-6">
-                    <div>
-                        <span class="text-lg font-bold text-gray-800">{{ $schedule['month'] }}</span>
-                        <span class="ml-1 text-lg text-gray-600 font-normal">{{ $schedule['year'] }}</span>
-                    </div>
-                    <div class="border rounded-lg px-1" style="padding-top: 2px;">
-                        <button type="button" class="leading-none rounded-lg transition ease-in-out duration-100 inline-flex cursor-pointer hover:bg-gray-200 p-1 items-center" wire:click="prev">
-                            <svg class="h-6 w-6 text-gray-500 inline-flex leading-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
-                        <div class="border-r inline-flex h-6"></div>
-                        <button type="button" class="leading-none rounded-lg transition ease-in-out duration-100 inline-flex items-center cursor-pointer hover:bg-gray-200 p-1" wire:click="next">
-                            <svg class="h-6 w-6 text-gray-500 inline-flex leading-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button>
-                    </div>
+<div class="mx-auto mt-8">
+    <div class="flex items-start conainter bg-white overflow-hidden">
+        <div class="bg-gray-200 rounded-lg p-5" style="width: 325px;">
+            <div class="flex flex-col text-xl leading-5 my-2">
+                <span>{{ $schedule->today }}</span>
+                <span class="text-3xl">{{ $schedule->date }}</span>
+            </div>
+            <div class="flex justify-between py-1.5">
+                <img class="w-6 cursor-pointer transform transition duration-100 hover:scale-125" src="{{ asset('/schedule/icons/left.svg') }}" alt="left" wire:click="prev">
+                <span class="text-xl font-bold uppercase">{{ $schedule->month }}</span>
+                <img class="w-6 cursor-pointer transform transition duration-100 hover:scale-125" src="{{ asset('/schedule/icons/right.svg') }}" alt="right" wire:click="next">
+            </div>
+            <div class="flex flex-wrap">
+                @foreach($schedule->days as $day)
+                <div style="width: 14.28%" class="py-2">
+                    <div class="text-gray-600 text-base uppercase tracking-wide font-bold text-center">{{ $day }}</div>
                 </div>
-
-                <div class="-mx-1 -mb-1">
-                    <div class="flex flex-wrap">
-                        @foreach($schedule['days'] as $day)
-                        <div style="width: 14.26%" class="px-2 py-2">
-                            <div class="text-gray-600 text-sm uppercase tracking-wide font-bold text-center">{{ $day }}</div>
-                        </div>
-                        @endforeach
+                @endforeach
+            </div>
+            <div class="flex flex-wrap mb-5">
+                @foreach($schedule->blankDays as $blankDay)
+                <div style="width: 14.28%; height: 35px"></div>
+                @endforeach
+                @foreach($schedule->noOfDays as $date)
+                <div style="width: 14.28%; height: 35px" class="flex justify-center pt-2 border-r border-b relative">
+                    <div class="inline-flex w-7 h-7 items-center justify-center cursor-pointer  text-center leading-none rounded-md transition ease-in-out duration-100 bg-white @if($this->isToday($date)) bg-blue-500 text-white @else text-gray-700 hover:bg-blue-200 @endif @if($focusDay == $date) bg-yellow-500 @endif" wire:click="search({{ $date }})">
+                        {{ $date }}
                     </div>
-
-                    <div class="flex flex-wrap border-t border-l">
-                        @foreach($schedule['blankDays'] as $blankDay)
-                        <div style="width: 14.28%; height: 140px" class="text-center border-r border-b px-4 pt-2"></div>
-                        @endforeach
-                        @foreach($schedule['noOfDays'] as $date)
-                        <div style="width: 14.28%; height: 140px" class="px-4 pt-2 border-r border-b relative">
-                            <div class="inline-flex w-6 h-6 items-center justify-center cursor-pointer text-center leading-none rounded-full transition ease-in-out duration-100  @if($this->isToday($date)) bg-blue-500 text-white @else text-gray-700 hover:bg-blue-200 @endif">{{ $date }}</div>
-                            <div style="height: 80px;" class="flex overflow-y-auto mt-1">
-                                <div class="absolute top-0 right-0 mt-2 mr-2 inline-flex items-center justify-center rounded-full text-sm h-6 bg-gray-400 px-1 leading-none uppercase" style="font-family: 'Truculenta', sans-serif;">
-                                    25 rac.
-                                </div>                                
-                            </div>
-                        </div>
-                        @endforeach                        
-                    </div>
+                    @if(\App\Models\Ration::hasAvailableWithDate($schedule->dateFocus, $date))
+                        <img class="w-3 absolute top-0" src="{{ asset('/schedule/icons/chef.svg') }}" alt="left">
+                    @endif
                 </div>
+                @endforeach
             </div>
         </div>
-
-        <!-- Modal -->
-        <div style=" background-color: rgba(0, 0, 0, 0.8)" class="fixed z-40 top-0 right-0 left-0 bottom-0 h-full w-full" x-show.transition.opacity="openEventModal">
-            <div class="p-4 max-w-xl mx-auto relative absolute left-0 right-0 overflow-hidden mt-24">
-                <div class="shadow absolute right-0 top-0 w-10 h-10 rounded-full bg-white text-gray-500 hover:text-gray-800 inline-flex items-center justify-center cursor-pointer" x-on:click="openEventModal = !openEventModal">
-                    <svg class="fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M16.192 6.344L11.949 10.586 7.707 6.344 6.293 7.758 10.535 12 6.293 16.242 7.707 17.656 11.949 13.414 16.192 17.656 17.606 16.242 13.364 12 17.606 7.758z" />
-                    </svg>
-                </div>
-
-                <div class="shadow w-full rounded-lg bg-white overflow-hidden w-full block p-8">
-
-                    <h2 class="font-bold text-2xl mb-6 text-gray-800 border-b pb-2">Add Event Details</h2>
-
-                    <div class="mb-4">
-                        <label class="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Event title</label>
-                        <input class="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" type="text" x-model="event_title">
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Event date</label>
-                        <input class="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" type="text" x-model="event_date" readonly>
-                    </div>
-
-                    <div class="inline-block w-64 mb-4">
-                        <label class="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Select a theme</label>
-                        <div class="relative">
-                            <select @change="event_theme = $event.target.value;" x-model="event_theme" class="block appearance-none w-full bg-gray-200 border-2 border-gray-200 hover:border-gray-500 px-4 py-2 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500 text-gray-700">
-                                <template x-for="(theme, index) in themes">
-                                    <option :value="theme.value" x-text="theme.label"></option>
-                                </template>
-
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-8 text-right">
-                        <button type="button" class="bg-white hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm mr-2" @click="openEventModal = !openEventModal">
-                            Cancel
-                        </button>
-                        <button type="button" class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 border border-gray-700 rounded-lg shadow-sm" @click="addEvent()">
-                            Save Event
-                        </button>
-                    </div>
-                </div>
+        <div class="flex-grow px-4">
+            <div class="px-2 pb-2 font-bold text-3xl">
+                {{ $schedule->dateFocus }}
             </div>
+            @forelse($rations as $ration)
+                @livewire('recipe-schedule', [
+                    'recipe' => $ration->recipe,
+                    'ration' => $ration,
+                    ], key($ration->id))
+            @empty
+                <div class="flex flex-col items-center justify-center text-gray-500 mt-16">
+                    <img class="w-16 opacity-25" src="{{ asset('/icons/serving-dish.svg') }}" alt="serving-dish">
+                    <span class="text-2xl">No hay raciones</span>
+                    <span class="text-2xl">para este día</span>
+                </div>
+            @endforelse
         </div>
-        <!-- /Modal -->
     </div>
 </div>

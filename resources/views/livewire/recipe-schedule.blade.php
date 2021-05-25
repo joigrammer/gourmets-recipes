@@ -11,7 +11,7 @@
                 ]) }}" class="text-2xl leading-5">{{ $recipe->name }}</a>
                 <p class="text-lg uppercase">{{ $recipe->meal->name }}</p>
             </div>
-            <div class="flex justify-between gap-2 text-base">
+            <div class="flex justify-between gap-1 text-base">
                 @if($ration->hasExpired())
                     <div class="uppercase rounded-lg px-2 bg-red-400">
                         Expirado
@@ -24,7 +24,10 @@
                 @auth
                     @if(\Auth::user()->hasRation($ration->id))
                         <div class="rounded-lg px-2 text-lg bg-blue-300">
-                            Tienes reservado ({{ \Auth::user()->myReservedInRation($ration->id) }}) raciones.
+                            Has reservado ({{ \Auth::user()->getMyReservedInRation($ration->id) }}) raciones.
+                        </div>
+                        <div class="rounded-lg px-2 text-lg bg-gray-300">
+                            Te han aprobado ({{ \Auth::user()->getMyRationApproved($ration->id) }}) raciones.
                         </div>
                     @endif
                 @endauth

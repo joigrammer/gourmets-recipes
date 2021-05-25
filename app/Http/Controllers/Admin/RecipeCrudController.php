@@ -74,11 +74,6 @@ class RecipeCrudController extends CrudController
         return \Redirect::to($this->crud->route);
     }
 
-    /**
-     * Configure the CrudPanel object. Apply settings to all operations.
-     *
-     * @return void
-     */
     public function setup()
     {
         CRUD::setModel(\App\Models\Recipe::class);
@@ -92,12 +87,7 @@ class RecipeCrudController extends CrudController
         $recipe = Recipe::find($id);
         return view('vendor.backpack.crud.recipes.details_row.ingredients', compact('recipe'));
     }
-    /**
-     * Define what happens when the List operation is loaded.
-     *
-     * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
-     * @return void
-     */
+
     protected function setupListOperation()
     {
         CRUD::addColumn([
@@ -131,12 +121,6 @@ class RecipeCrudController extends CrudController
         ]);
     }
 
-    /**
-     * Define what happens when the Create operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-create
-     * @return void
-     */
     protected function setupCreateOperation()
     {
         $this->crud->enableTabs();
@@ -224,21 +208,9 @@ class RecipeCrudController extends CrudController
         ]);
     }
 
-    public function show($id)
-    {
-        $recipe = Recipe::find($id);
-        return redirect()->route('recipes.show', $recipe->slug);
-
-    }
-
-    /**
-     * Define what happens when the Update operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-update
-     * @return void
-     */
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
     }
+
 }

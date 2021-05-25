@@ -2,81 +2,105 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\ReservationRequest;
+use App\Models\Recipe;
+use App\Models\Reservation;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
-/**
- * Class ReservationCrudController
- * @package App\Http\Controllers\Admin
- * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
- */
 class ReservationCrudController extends CrudController
 {
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
-    /**
-     * Configure the CrudPanel object. Apply settings to all operations.
-     * 
-     * @return void
-     */
+    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+
     public function setup()
     {
+        $year = \Route::current()->parameter('year');
+        $month = \Route::current()->parameter('month');
+        $day = \Route::current()->parameter('day');
+        $slug = \Route::current()->parameter('slug');
         CRUD::setModel(\App\Models\Reservation::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/reservation');
-        CRUD::setEntityNameStrings('reservation', 'reservations');
+        CRUD::setRoute(config('backpack.base.route_prefix') . "/ration/{$year}/{$month}/{$day}/{$slug}");
+        $recipe = Recipe::where('slug', $slug)->first();
+        Log::info(var_export(\Route::current()->parameters(), true));
+        $date = Carbon::create($year, $month, $day);
+        $this->crud->query->select('ration_user.*');
+        $this->crud->query->join('rations', 'rations.id', '=','ration_user.ration_id');
+        $this->crud->query->join('recipes', 'recipes.id', '=','rations.recipe_id');
+        $this->crud->query->where('recipes.slug', $slug);
+        $this->crud->query->where('rations.available_at', $date->format('Y-m-d'));
+        CRUD::setEntityNameStrings('reservation', "{$date->format('d-m-Y')}, {$recipe->name}");
     }
 
-    /**
-     * Define what happens when the List operation is loaded.
-     * 
-     * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
-     * @return void
-     */
     protected function setupListOperation()
     {
-        CRUD::column('stock');
-        CRUD::column('event_id');
-        CRUD::column('recipe_id');
-    }
+        $this->crud->removeButton('update');
+        $this->crud->getCurrentOperation();
+        $this->crud->addButtonFromView('line', 'approve', 'approve', 'end');
+        $this->crud->addButtonFromView('line', 'disapprove', 'disapprove', 'end');
 
-    /**
-     * Define what happens when the Create operation is loaded.
-     * 
-     * @see https://backpackforlaravel.com/docs/crud-operation-create
-     * @return void
-     */
-    protected function setupCreateOperation()
-    {
-        CRUD::setValidation(ReservationRequest::class);
+        CRUD::column('user_id');
 
-        CRUD::field('stock');
-        CRUD::field('event_id');
-
-        CRUD::addField([
-            'name' => 'recipe_id',
-            'type' => 'select2',
-            'entity' => 'recipe'
+        CRUD::addColumn([
+            'name' => 'rations',
+            'label' => 'Raciones',
+            'type' => 'text',
         ]);
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
-         */
+
+        CRUD::addColumn([
+            'name' => 'created_at',
+            'label' => 'Fecha',
+            'type' => 'date',
+            'format' => 'DD/MM/YYYY'
+        ]);
+
+        CRUD::addColumn([
+            'name' => 'status',
+            'label' => 'Estado',
+            'type' => 'closure',
+            'function' => function($reservation) {
+                return Reservation::getSpanStatusFromCodeName()[$reservation->status];
+            }
+        ]);
+
     }
 
-    /**
-     * Define what happens when the Update operation is loaded.
-     * 
-     * @see https://backpackforlaravel.com/docs/crud-operation-update
-     * @return void
-     */
-    protected function setupUpdateOperation()
+    public function disapprove()
     {
-        $this->setupCreateOperation();
+        try {
+            $id = \Route::current()->parameter('id');
+            $reservation = Reservation::find($id);
+            $reservation->update([
+                'status' => Reservation::ESTADO_RESERVACION_RECHAZADA
+            ]);
+        } catch (\Exception $exception) {
+            return response()->json([
+                "errors" => [
+                    "status" => $exception->getCode(),
+                    "title" => $exception->getMessage()
+                ]
+            ], 204);
+        }
     }
+
+    public function approve()
+    {
+        try {
+            $id = \Route::current()->parameter('id');
+            $reservation = Reservation::find($id);
+            $reservation->update([
+                'status' => Reservation::ESTADO_RESERVACION_APROBADA
+            ]);
+        } catch (\Exception $exception) {
+            return response()->json([
+                "errors" => [
+                    "status" => $exception->getCode(),
+                    "title" => $exception->getMessage()
+                ]
+            ], 204);
+        }
+    }
+
 }

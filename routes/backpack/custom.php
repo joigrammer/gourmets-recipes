@@ -19,9 +19,11 @@ Route::group([
     Route::crud('event', 'EventCrudController');
     Route::crud('ingredient', 'IngredientCrudController');
     Route::crud('recipe', 'RecipeCrudController');
-    Route::crud('reservation', 'ReservationCrudController');
     Route::crud('tag', 'TagCrudController');
     Route::crud('meal', 'MealCrudController');
     Route::crud('ration', 'RationCrudController');
+    Route::crud('ration/{year}/{month}/{day}/{slug}', 'ReservationCrudController');
+    Route::patch('ration/{year}/{month}/{day}/{slug}/{id}/approve', 'ReservationCrudController@approve');
+    Route::patch('ration/{year}/{month}/{day}/{slug}/{id}/disapprove', 'ReservationCrudController@disapprove');
     Route::crud('measurement', 'MeasurementCrudController');
 }); // this should be the absolute last line of this file

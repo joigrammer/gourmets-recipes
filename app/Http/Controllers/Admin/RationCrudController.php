@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\RationRequest;
 use App\Models\Ration;
-use App\Models\Recipe;
 use App\Models\User;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -21,7 +20,6 @@ class RationCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
     public function store()
     {
@@ -47,24 +45,11 @@ class RationCrudController extends CrudController
         CRUD::setRoute(config('backpack.base.route_prefix') . '/ration');
         CRUD::setEntityNameStrings('ration', 'rations');
         CRUD::orderBy('available_at', 'desc');
-        CRUD::enableDetailsRow();
     }
 
-    public function showDetailsRow($id)
-    {
-        $ration = Ration::find($id);
-        return view('vendor.backpack.crud.rations.details_row.users', compact('ration'));
-        //CRUD::setDetailsRowView('vendor.backpack.crud.rations.details_row.users');
-    }
-
-    /**
-     * Define what happens when the List operation is loaded.
-     *
-     * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
-     * @return void
-     */
     protected function setupListOperation()
     {
+        $this->crud->addButtonFromModelFunction('line', 'open_ration_reservation', 'openRationReservation', 'beginning');
 
         CRUD::addColumn([
             'name' => 'available_at',
@@ -90,7 +75,8 @@ class RationCrudController extends CrudController
             'label' => 'Recipe',
             'type' => 'closure',
             'function' => function($ration) {
-                return Recipe::getSlugWithLink('recipes.show', $ration->recipe->slug);
+                if ($ration->hasExpired()) return $ration->recipe->name;
+                return Ration::getRecipeSlugWithLink('rations.create', $ration);
             }
         ]);
 
@@ -156,12 +142,6 @@ class RationCrudController extends CrudController
         ]);
     }
 
-    /**
-     * Define what happens when the Update operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-update
-     * @return void
-     */
     protected function setupUpdateOperation()
     {
         CRUD::setValidation(RationRequest::class);

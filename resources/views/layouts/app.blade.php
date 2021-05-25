@@ -12,8 +12,8 @@
 
         <!-- Styles -->
         <link rel="stylesheet" href="{{ mix('css/app.css') }}">
-        @yield('stylesheets') 
-        
+        @yield('stylesheets')
+
         @livewireStyles
 
         <!-- Scripts -->
@@ -26,7 +26,7 @@
             @livewire('navigation-menu')
 
             <!-- Page Heading -->
-            <header class="bg-white shadow relative">                
+            <header class="bg-white shadow relative">
                 <div class="max-w-7xl mx-auto py-4">
                     @livewire('navigation')
                 </div>
@@ -38,8 +38,11 @@
             </main>
         </div>
 
+        @livewire('footer')
+
         @stack('modals')
 
         @livewireScripts
     </body>
+
 </html>

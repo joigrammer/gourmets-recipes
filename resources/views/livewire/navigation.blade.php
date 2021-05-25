@@ -11,13 +11,7 @@
             <!--<a href="#">{{ __('RECETAS') }}</a>-->
         </li>
         <li class="flex gap-1">
-            <img src="{{ asset('/icons/star.svg') }}" alt="recipe-book" class="w-5">
-            <x-jet-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('admin')" class="text-xl">
-                {{ __('MÁS POPULARES') }}
-            </x-jet-nav-link>
-        </li>
-        <li class="flex gap-1">
-            <img src="{{ asset('/icons/serving-dish.svg') }}" alt="recipe-book" class="w-6">
+            <img src="{{ asset('/icons/serving-dish.svg') }}" alt="recipe-book" class="w-5">
             <x-jet-nav-link href="{{ route('rations.schedule') }}" :active="request()->routeIs('rations.schedule')" class="text-xl">
                 {{ __('PLATOS DEL DIA') }}
             </x-jet-nav-link>

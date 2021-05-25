@@ -80,8 +80,14 @@ class User extends Authenticatable
         return $this->rations()->where('ration_id', $id)->first();
     }
 
-    public function myReservedInRation($id)
+    public function getMyReservedInRation($id)
     {
         return $this->rations()->select('rations')->where('ration_id', $id)->sum('rations');
     }
+
+    public function getMyRationApproved($id)
+    {
+        return $this->rations()->select('rations')->where('ration_user.ration_id', $id)->where('ration_user.status', Reservation::ESTADO_RESERVACION_APROBADA)->sum('ration_user.rations');
+    }
+
 }
