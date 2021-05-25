@@ -4,7 +4,7 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 
-class RecipeScheduleTest extends Component
+class RecipeSchedule extends Component
 {
     public $recipe;
     public $ration;
