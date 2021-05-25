@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Cviebrock\EloquentSluggable\Sluggable;
 
 class Ingredient extends Model
 {
     use \Backpack\CRUD\app\Models\Traits\CrudTrait;
+    use Sluggable;
     use HasFactory;
 
     /**
@@ -31,6 +33,15 @@ class Ingredient extends Model
         'id' => 'integer',
         'category_id' => 'integer',
     ];
+
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'name'
+            ]
+        ];
+    }
 
     public function tags()
     {
