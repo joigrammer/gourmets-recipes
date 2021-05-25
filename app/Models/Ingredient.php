@@ -67,4 +67,5 @@ class Ingredient extends Model
     {
         return $this->belongsTo(\App\Models\Category::class);
     }
+
 }
