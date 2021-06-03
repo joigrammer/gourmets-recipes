@@ -1,62 +1,127 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Recetas al mojo
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Recetas al mojo es un proyecto destinado al CIFP Zonzamas para el Ciclo Superior de Cocina y Gastronomía, en cuanto a la gestión o elaboración
+de recetas con un apartado para la reservación de ésteos en periodos o fechas pautadas.
 
-## About Laravel
+El objetivo principal del proyecto es que el ciclo cuente con una plataforma donde pueda publicar sus elaboraciones al público en general, con el fin
+de que éstos tengan una perspectiva respecto al desarrollo de la educación impartida por CIFP Zonzamas, además de contar con un servicio único y exclusivo
+para que los usuarios que accedan a la plataforma puedan ser partícipes de los eventos que se publican en fechas pautadas respecto a los platos publicados en la propia página. 
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Pre-requisitos
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Tener en cuenta. Debemos tener instalado:
 
-## Learning Laravel
+- Php7.3
+- Composer V2.0.8
+- Nodejs: V15.6.0
+- Mysql
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Preparando el entorno
+### PASO 1: Instalación PHP (dependencias adicionales)
 
-## Laravel Sponsors
+Actualizar la caché
+```
+sudo apt-get update
+```
+Instalación de paquetes requeridos
+```
+sudo apt-get upgrade
+```
+### PASO 2: Descargar e Instalar Composer
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Utilizamos Curl para obtener e instalar composer
+```
+curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+```
 
-### Premium Partners
+### PASO 3: Descargar las dependencias necesarias
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/)**
-- **[OP.GG](https://op.gg)**
+· php-xml
+```
+sudo apt install php7.3-xml
+```
 
-## Contributing
+· php-mbstring
+```
+sudo apt-get install php7.3-mbstring
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+· php-mysql
+```
+sudo apt-get install php7.3-mysql
+```
 
-## Code of Conduct
+### PASO 4: Instalación de Mysql
+Link: https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04-es (Guía de Instalación)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### Acceso a la Base de Datos
+	
+* Activar Servicio Mysql 
+```
+sudo service mysql start
+```
+* Ingresar como usuario root (sin contraseña)
+```
+sudo mysql
+```
+* Eliminar el usuario root
+```
+drop user root@localhost;
+```
+* Crear un nuevo usuario con una contraseña
+```
+CREATE USER 'root'@'localhost' IDENTIFIED BY '1234';
+```
+* Crear base de datos
+```
+CREATE DATABASE gourmets;
+```
+* Otogar todos los privilegios al usuario
+```
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
+```
+* Limpiar cache
+```
+FLUSH PRIVILEGES;
+```
 
-## Security Vulnerabilities
+PASO 5: Clonando el Proyecto
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
+git clone https://github.com/joigrammer/gourmets-recipes/tree/measurement
+```
 
-## License
+Situarse en la Carpeta del Proyecto e Instalar las dependencias
+```
+composer update
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Git por defecto ignora el archivo .env de la configuración del proyecto, pero tendrá un archivo llamado .env.example
+donde tendría que realizar una copia del contenido de este archivo y crear un nuevo archivo .env para la respectiva configuración, 
+luego, tendrá que ingresar las credenciales de la base de datos como la base de datos en sí como le indica el archivo .env.
+
+Generamos una clave 
+```
+php artisan key:generate
+```
+
+Antes de ejecutar las migraciones comprobamos 
+Ejecutamos las migraciones
+```
+php artisan migrate
+```
+
+Ejecutamos los seeders
+```
+php artisan db:seed
+```
+
+Levantamos el servidor
+
+```
+php artisan serve
+```
+
+## Accedemos al sistema
