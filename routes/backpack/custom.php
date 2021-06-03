@@ -10,13 +10,11 @@ Route::group([
     'prefix'     => config('backpack.base.route_prefix', 'admin'),
     'middleware' => array_merge(
         (array) config('backpack.base.web_middleware', 'web'),
-        (array) config('backpack.base.middleware_key', 'admin')
+        (array) config('backpack.base.middleware_key', 'admin'),
     ),
     'namespace'  => 'App\Http\Controllers\Admin',
 ], function () { // custom admin routes
-    Route::crud('allergen', 'AllergenCrudController');
     Route::crud('category', 'CategoryCrudController');
-    Route::crud('event', 'EventCrudController');
     Route::crud('ingredient', 'IngredientCrudController');
     Route::crud('recipe', 'RecipeCrudController');
     Route::crud('tag', 'TagCrudController');

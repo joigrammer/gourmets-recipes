@@ -32,11 +32,11 @@ class UpdateCategoryRequest extends FormRequest
     {
         return [
             'name' => [
-                'required', 'min:5', 'max:70', 
+                'required', 'min:5', 'max:70',
                 Rule::unique('categories')->ignore($this->id)
             ],
             'slug' => [
-                'required', 'min:5', 'max:70', 
+                'required', 'min:5', 'max:70',
                 Rule::unique('categories')->ignore($this->id)
             ],
             'image' => [
