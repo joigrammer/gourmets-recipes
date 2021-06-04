@@ -125,3 +125,5 @@ php artisan serve
 ```
 
 ## Accedemos al sistema
+#usuario: admin@gourmets.com
+#contraseña: 1234
